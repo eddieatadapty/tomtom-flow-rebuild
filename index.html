@@ -1,0 +1,1592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- flow-rebuild template (Growth Audit, v3: + walkthrough video, phone view/QR, localization, paywall today vs proposed). Replace every double-brace placeholder, everything between
+     the SCREENS markers, and the CONTENT json. Rules that brand-check.py enforces are marked RULE.
+     Reference builds: eddieatadapty.github.io/datacamp-flow-rebuild-v2 · bterzic123.github.io/planner5d-flow-rebuild-v2 -->
+<title>TomTom GO Expert Growth Audit</title>
+<meta name="description" content="Five ideas to turn more TomTom GO Expert users into subscribers, each built into a clickable version of TomTom GO Expert's own onboarding. Prepared by Adapty.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- the APP's font (brand.json fonts, or the closest Google family) + a mono if the app shows code -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* BRAND:START — the only place the APP's colours are written as literals. RULE: every value here is
+   copied from brand.json / a sampled pixel of the app's own screens; never "improved". Used only inside the phone. */
+:root{
+  --b-primary:#f6f7fe;       /* their Continue pill (sampled) */
+  --b-primary-ink:#004b7f;   /* text on the pill: TomTom dark blue */
+  --b-bg:#0097e8;            /* onboarding blue, mid-gradient (sampled) */
+  --b-top:#00a4fa;           /* gradient top (sampled) */
+  --b-deep:#004d83;          /* gradient bottom (sampled) */
+  --b-surface:#1695ce;       /* photo-tile fill (sampled) */
+  --b-ink:#ffffff;
+  --b-ink2:rgba(255,255,255,.82);
+  --b-line:#28a5d9;          /* photo-tile border (sampled) */
+  --b-track:#a0e1ff;         /* progress track (sampled) */
+  --b-fill:#004f82;          /* progress fill (sampled) */
+  --b-accent2:#00a65e;       /* TomTom green: the "fastest route" line, badges */
+  --b-pin:#df1b12;           /* TomTom red pin */
+  --b-grad:linear-gradient(180deg,#00a4fa 0%,#008bd8 26%,#006bae 58%,#004d83 100%);
+  --b-radius:10px;
+  --b-pill:999px;
+  --b-font:-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',system-ui,sans-serif;
+  --b-mono:ui-monospace,monospace;
+}
+/* BRAND:END */
+/* A second app family (e.g. a mono for code) is applied HERE, never in SCREENS css (brand-check allows only
+   var(--b-font) there). Prefix with .scr so it beats the screens' font shorthands, e.g.:
+   .scr .code,.scr .instr code{font-family:var(--b-mono)} */
+
+/* ================= the audit page — Adapty's, not the app's. Light, Apple-style. ================= */
+:root{
+  color-scheme:light;
+  --st-ground:#f5f5f7; --st-card:#ffffff; --st-ink:#1d1d1f; --st-ink2:#6e6e73; --st-ink3:#86868b;
+  --st-hair:rgba(0,0,0,.09); --st-link:#0066cc;
+  --st-accent:#004b7f;      /* dark brand colour of the APP: buttons, the outcome band */
+  --st-hi:#00aaff;          /* bright brand colour of the APP: outcome numbers on the band, idea dots */
+  --st-mark:rgba(0,170,255,.42); /* --st-hi at ~.5 alpha: the highlighter under impact numbers */
+  --st-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+html,body{margin:0}
+body{background:var(--st-ground);color:var(--st-ink);font-family:var(--st-font);-webkit-font-smoothing:antialiased;font-size:17px;line-height:1.47}
+.au-wrap{max-width:1080px;margin:0 auto;padding-inline:22px}
+a{color:var(--st-link)}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--st-link);outline-offset:3px;border-radius:6px}
+mark{background:linear-gradient(transparent 62%,var(--st-mark) 62%,var(--st-mark) 92%,transparent 92%);color:inherit;padding:0 .04em}
+
+/* nav */
+.au-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(245,245,247,.8);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--st-hair)}
+.au-nav-in{max-width:1080px;margin:0 auto;padding-inline:22px;height:52px;display:flex;align-items:center;gap:26px}
+.au-brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.au-brand img{width:26px;height:26px;border-radius:7px;flex:none}
+.au-brand span{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.au-brand small{font-size:15px;font-weight:400;color:var(--st-ink2)}
+.au-nav a{font-size:13px;color:var(--st-ink);text-decoration:none;opacity:.82}
+.au-nav a:hover{opacity:1}
+@media (max-width:560px){.au-nav a.au-opt{display:none}.au-brand small{display:none}}
+
+/* hero */
+.au-top-hero{text-align:center;padding-top:clamp(56px,9vw,96px);overflow:hidden;position:relative}
+.au-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--st-ink);margin:0 0 14px}
+.au-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-display{font-size:clamp(60px,12vw,120px);line-height:.98;font-weight:700;letter-spacing:-.05em;margin:0}
+.au-lede{font-size:clamp(23px,3.4vw,34px);line-height:1.16;font-weight:600;letter-spacing:-.022em;max-width:760px;margin:22px auto 0;text-wrap:balance}
+.au-lede span{color:var(--st-ink2)}
+.au-byline{font-size:14px;color:var(--st-ink3);margin:18px 0 0}
+.au-ctas{display:flex;gap:26px;justify-content:center;align-items:center;margin-top:30px;flex-wrap:wrap}
+.au-btn{display:inline-block;background:var(--st-accent);color:#fff;border-radius:980px;padding:12px 23px;font-size:17px;font-weight:500;text-decoration:none;border:0;cursor:pointer}
+.au-btn:hover{filter:brightness(1.25)}
+.au-lnk{background:none;border:0;padding:0;color:var(--st-link);font-size:17px;text-decoration:none;cursor:pointer}
+.au-lnk::after{content:"\00a0›"}
+.au-lnk:hover{text-decoration:underline}
+.au-phones{display:flex;justify-content:center;align-items:flex-start;margin-top:clamp(40px,6vw,64px);height:clamp(300px,52vw,560px)}
+.au-hp{flex:none;border:0;padding:0;background:none;cursor:pointer;width:27%;max-width:290px;margin:0 -2.5%;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.au-hp img{display:block;width:100%;height:auto;filter:drop-shadow(0 28px 50px rgba(0,0,0,.2))}
+.au-hp.au-c{width:31%;max-width:330px;z-index:2}
+.au-hp.au-l{transform:translateY(12%) rotate(-5deg)}
+.au-hp.au-r{transform:translateY(12%) rotate(5deg)}
+.au-hp.au-l:hover{transform:translateY(9%) rotate(-5deg)}.au-hp.au-r:hover{transform:translateY(9%) rotate(5deg)}.au-hp.au-c:hover{transform:translateY(-3%)}
+
+/* sections */
+.au-sec{padding-block:clamp(72px,10vw,120px)}
+.au-sec.au-white{background:var(--st-card)}
+.au-kicker{font-size:15px;font-weight:600;color:var(--st-ink2);margin:0 0 12px}
+.au-h2{font-size:clamp(34px,5.2vw,56px);line-height:1.06;font-weight:700;letter-spacing:-.035em;margin:0;text-wrap:balance}
+.au-h2 span{color:var(--st-ink3)}
+.au-split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,6vw,80px);align-items:end}
+.au-split p{margin:0;font-size:clamp(17px,1.7vw,21px);line-height:1.45;color:var(--st-ink2);letter-spacing:-.01em}
+.au-split p b{color:var(--st-ink);font-weight:600}
+.au-split p + p{margin-top:16px}
+.au-stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(48px,7vw,80px);border-top:1px solid var(--st-hair)}
+.au-stat{padding:28px 20px 0 0}
+.au-stat b{display:block;font-size:clamp(40px,5.5vw,64px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.au-stat span{display:block;font-size:15px;color:var(--st-ink2);margin-top:10px;max-width:22ch}
+.au-notes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,40px);margin-top:clamp(48px,7vw,72px)}
+.au-note h3{font-size:19px;font-weight:600;letter-spacing:-.015em;margin:0 0 8px}
+.au-note p{margin:0;font-size:15.5px;line-height:1.5;color:var(--st-ink2)}
+.au-note .au-ic{width:36px;height:36px;border-radius:10px;background:var(--st-ground);display:grid;place-items:center;margin-bottom:16px}
+.au-note .au-ic svg{width:19px;height:19px;stroke:var(--st-accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ideas */
+.au-ideas-h{margin-bottom:clamp(32px,5vw,48px)}
+.au-list{background:var(--st-card);border-radius:28px;padding-inline:clamp(20px,4vw,44px)}
+.au-idea{display:grid;grid-template-columns:56px 1fr 220px;gap:20px;align-items:start;padding-block:clamp(26px,3.5vw,36px);border-top:1px solid var(--st-hair)}
+.au-idea:first-child{border-top:0}
+.au-idea .au-num{font-size:15px;font-weight:600;color:var(--st-ink3);font-variant-numeric:tabular-nums;padding-top:6px}
+.au-idea h3{font-size:clamp(21px,2.4vw,26px);line-height:1.2;font-weight:600;letter-spacing:-.022em;margin:0 0 8px}
+.au-idea p{margin:0 0 12px;font-size:17px;line-height:1.5;color:var(--st-ink2);max-width:58ch}
+.au-idea p code{font:600 15px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--st-ink);background:var(--st-ground);padding:2px 7px;border-radius:6px}
+.au-idea .au-lnk{font-size:15px}
+.au-imp{text-align:right}
+.au-imp .au-v{font-size:clamp(30px,3.6vw,40px);font-weight:700;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums;color:var(--st-accent)}
+.au-imp .au-l{font-size:13.5px;color:var(--st-ink2);margin-top:8px}
+.au-band{margin-top:20px;background:var(--st-accent);color:#fff;border-radius:28px;padding:clamp(32px,5vw,56px);display:grid;grid-template-columns:1fr auto;gap:clamp(28px,5vw,64px);align-items:center}
+.au-band .au-k{font-size:15px;font-weight:600;color:rgba(255,255,255,.62);margin:0 0 10px}
+.au-band h3{font-size:clamp(24px,3vw,32px);line-height:1.18;font-weight:600;letter-spacing:-.022em;margin:0;text-wrap:balance}
+.au-band .au-fn{font-size:13px;line-height:1.5;color:rgba(255,255,255,.55);margin:16px 0 0;max-width:52ch}
+.au-nums{display:flex;gap:clamp(28px,4vw,48px)}
+.au-nums small{display:block;font-size:13px;color:rgba(255,255,255,.62)}
+.au-nums b{display:block;font-size:clamp(48px,6.5vw,76px);font-weight:700;letter-spacing:-.045em;line-height:1;color:var(--st-hi);font-variant-numeric:tabular-nums;margin:4px 0 8px}
+.au-nums span{font-size:14px;color:rgba(255,255,255,.8)}
+.au-band .au-btn{background:var(--st-hi);color:var(--st-accent);font-weight:600;margin-top:26px}
+
+/* prototype */
+.au-proto-h{text-align:center;max-width:720px;margin:0 auto}
+.au-proto-h p{font-size:clamp(17px,1.7vw,21px);color:var(--st-ink2);margin:14px 0 0}
+.au-seg{display:flex;gap:4px;justify-content:center;margin:clamp(28px,4vw,40px) auto 0;padding:4px;background:var(--st-ground);border-radius:980px;width:max-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.au-seg::-webkit-scrollbar{display:none}
+.au-chip{flex:none;display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--st-ink2);font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:980px;cursor:pointer;white-space:nowrap}
+.au-chip:hover{color:var(--st-ink)}
+.au-chip.on{background:var(--st-card);color:var(--st-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.au-chip i{font-style:normal;font-size:11px;font-weight:700;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--st-hi);color:var(--st-accent)}
+.au-stage{display:grid;grid-template-columns:auto minmax(0,420px);gap:clamp(32px,6vw,72px);justify-content:center;align-items:center;margin-top:clamp(28px,4vw,44px)}
+.phone{width:390px;height:844px;border-radius:56px;padding:10px;background:#0b0d10;box-shadow:0 0 0 1.5px #3a3d42,0 40px 90px rgba(0,0,0,.25);max-width:calc(100vw - 44px)}
+.phone-in{position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;background:var(--b-bg)}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#000;z-index:9}
+.sbar{position:absolute;top:0;left:0;right:0;height:52px;display:flex;justify-content:space-between;align-items:center;padding:4px 32px 0;font:600 15px -apple-system,system-ui,sans-serif;color:var(--b-ink);z-index:8;pointer-events:none}
+.au-pn{background:var(--st-ground);border-radius:28px;padding:clamp(26px,3.5vw,38px)}
+.au-pn-k{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--st-ink)}
+.au-pn-k i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-pn-k.au-ctx{color:var(--st-ink2)}.au-pn-k.au-ctx i{background:var(--st-ink3);box-shadow:none}
+.au-pn-t{font-size:clamp(24px,2.6vw,30px);line-height:1.12;font-weight:700;letter-spacing:-.028em;margin:10px 0 14px;text-wrap:balance}
+.au-pn-h{margin:0;font-size:17px;line-height:1.55;color:var(--st-ink2)}
+.au-pn-h b{color:var(--st-ink);font-weight:600}
+.au-pn-o{margin-top:24px;padding-top:22px;border-top:1px solid var(--st-hair)}
+.au-pn-o .au-lab{font-size:13px;font-weight:600;color:var(--st-ink3)}
+.au-pn-o .au-val{font-size:clamp(38px,4.4vw,50px);font-weight:700;letter-spacing:-.04em;line-height:1.05;color:var(--st-accent);margin-top:6px;font-variant-numeric:tabular-nums}
+.au-pn-o .au-sub{font-size:14px;color:var(--st-ink2);margin-top:4px}
+.au-pn-a{margin:18px 0 0;font-size:14px;line-height:1.5;color:var(--st-ink2)}
+.au-pn-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:28px;padding-top:18px;border-top:1px solid var(--st-hair);font-size:13px;color:var(--st-ink3)}
+.au-pn-nav button{background:var(--st-card);border:0;border-radius:980px;padding:8px 15px;font-size:14px;font-weight:500;color:var(--st-ink);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.au-pn-nav button:disabled{opacity:.35;cursor:default}
+.au-hint{text-align:center;font-size:14px;color:var(--st-ink3);margin:22px 0 0}
+
+/* footer */
+.au-foot{padding-block:56px 72px;border-top:1px solid var(--st-hair)}
+.au-foot details{border-bottom:1px solid var(--st-hair);padding-bottom:18px}
+.au-foot summary{cursor:pointer;font-size:17px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.au-foot summary::-webkit-details-marker{display:none}
+.au-foot summary::after{content:"+";font-size:24px;font-weight:300;color:var(--st-ink2)}
+.au-foot details[open] summary::after{content:"−"}
+.au-srcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 48px;margin-top:18px}
+.au-srcs h4{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--st-ink3);margin:18px 0 6px}
+.au-srcs dl{margin:0}.au-srcs dt{font-size:14.5px;font-weight:600;margin-top:10px}
+.au-srcs dd{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--st-ink2)}
+.au-fine{font-size:12.5px;line-height:1.6;color:var(--st-ink3);margin:22px 0 0;max-width:80ch}
+.au-cta-line{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:36px}
+.au-cta-line p{margin:0;font-size:clamp(19px,2.2vw,24px);font-weight:600;letter-spacing:-.02em;max-width:34ch}
+
+@media (max-width:900px){
+  .au-split,.au-band{grid-template-columns:1fr}
+  .au-notes{grid-template-columns:1fr}
+  .au-idea{grid-template-columns:40px 1fr}
+  .au-imp{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:10px}
+  .au-imp .au-l{margin:0}
+  .au-imp .au-v{white-space:nowrap}
+  .au-stage{grid-template-columns:1fr;justify-items:center}
+  .au-pn{width:100%;max-width:520px}
+  .au-srcs{grid-template-columns:1fr}
+}
+@media (max-width:560px){.au-stats{grid-template-columns:1fr}.au-stat{padding:22px 0 0}.au-nums{flex-direction:column;gap:18px}}
+
+/* ================= extras (audit side): video, language, phone view + QR, paywall today vs proposed, ?tour ================= */
+[hidden]{display:none!important}
+/* the device never scrolls: off-screen slides would otherwise make it scrollable by focus / scrollIntoView */
+.phone-in,.scr{overflow:clip}
+/* hero: walkthrough link */
+.au-play::before{content:"▶";font-size:.72em;margin-right:7px;position:relative;top:-1px}
+/* video dialog */
+.au-vid{border:0;padding:0;background:transparent;max-width:min(1120px,94vw);width:100%;overflow:visible}
+.au-vid::backdrop{background:rgba(0,0,0,.74);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.au-vid-in{background:#000;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.au-vid video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.au-vid-bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 4px 0;font-size:14px}
+.au-vid-bar a{color:#fff;opacity:.85}
+.au-vid-x{background:rgba(255,255,255,.16);border:0;color:#fff;border-radius:980px;padding:8px 16px;font-size:14px;cursor:pointer}
+/* language switch */
+.au-langrow{display:flex;justify-content:center;align-items:center;gap:12px;margin:18px 0 0;font-size:13.5px;color:var(--st-ink2);flex-wrap:wrap}
+.au-lsw{display:inline-flex;gap:2px;padding:3px;background:var(--st-ground);border-radius:980px}
+.au-lsw button{border:0;background:none;padding:6px 13px;border-radius:980px;font-size:13.5px;font-weight:500;color:var(--st-ink2);cursor:pointer;white-space:nowrap}
+.au-lsw button.on{background:var(--st-card);color:var(--st-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+/* QR card (desktop) / full-screen button (phone) */
+.au-qr{display:flex;align-items:center;gap:18px;margin:26px auto 0;max-width:500px;background:var(--st-ground);border-radius:22px;padding:14px 22px 14px 14px}
+.au-qr img{width:112px;height:112px;border-radius:12px;image-rendering:pixelated;flex:none;background:#fff}
+.au-qr b{display:block;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.au-qr p{margin:4px 0 0;font-size:14.5px;line-height:1.45;color:var(--st-ink2)}
+.au-mobw{display:none;text-align:center;margin-top:22px}
+@media (max-width:900px){.au-qr{display:none}.au-mobw{display:block}}
+/* paywall: today vs proposed */
+.au-cmp{display:grid;grid-template-columns:minmax(0,290px) minmax(0,1fr) minmax(0,290px);gap:clamp(24px,4vw,52px);align-items:center;margin-top:clamp(32px,5vw,52px)}
+.au-cmp figure{margin:0;text-align:center}
+.au-cmp figure img{display:block;width:100%;height:auto;filter:drop-shadow(0 24px 44px rgba(0,0,0,.18))}
+.au-cmp figcaption{margin-top:14px;font-size:15px;font-weight:600}
+.au-cmp figcaption span{color:var(--st-ink2);font-weight:400}
+.au-cmp-go{border:0;padding:0;background:none;cursor:pointer;display:block;width:100%;transition:transform .3s}
+.au-cmp-go:hover{transform:translateY(-4px)}
+.au-chg{list-style:none;margin:0;background:var(--st-card);border-radius:24px;padding:4px clamp(18px,2.4vw,28px)}
+.au-chg li{padding:15px 0;border-top:1px solid var(--st-hair)}
+.au-chg li:first-child{border-top:0}
+.au-chg h4{margin:0 0 7px;font-size:16px;font-weight:600;letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.au-chg h4 i{font-style:normal;font-size:12px;font-weight:600;color:var(--st-accent);background:var(--st-mark);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.au-was,.au-now{display:grid;grid-template-columns:78px 1fr;gap:8px;font-size:14.5px;line-height:1.42}
+.au-was{color:var(--st-ink3)}
+.au-now{color:var(--st-ink);margin-top:3px}
+.au-was em,.au-now em{font-style:normal;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}
+.au-now em{color:var(--st-link)}
+.au-kept{margin:22px 0 0;font-size:14px;color:var(--st-ink2);text-align:center}
+@media (max-width:900px){.au-cmp{grid-template-columns:1fr 1fr;gap:18px}.au-chg{grid-column:1 / -1;order:3}.au-was,.au-now{grid-template-columns:70px 1fr}}
+
+/* ?app — the prototype full screen on a real phone, with a bar that opens the idea panel */
+html.appmode,html.appmode body{height:100%;overflow:hidden;background:#000}
+html.appmode .au-nav,html.appmode .au-top-hero,html.appmode #why,html.appmode #ideas,html.appmode #compare,html.appmode .au-foot,
+html.appmode .au-proto-h,html.appmode #prototype .au-langrow,html.appmode #chips,html.appmode .au-hint,html.appmode .au-qr,html.appmode .au-mobw{display:none!important}
+html.appmode #prototype{padding:0;background:#000}
+html.appmode #prototype .au-wrap{padding:0;max-width:none}
+html.appmode .au-stage{display:block;margin:0}
+html.appmode .phone{position:fixed;top:0;left:0;right:0;margin:0 auto;width:min(100%,480px);height:calc(100% - 56px - env(safe-area-inset-bottom,0px));max-width:none;border-radius:0;padding:0;box-shadow:none;background:#000}
+html.appmode .phone-in{border-radius:0}
+html.appmode .island,html.appmode .sbar{display:none}
+html.appmode .scr .s-pad{padding-top:max(58px,calc(env(safe-area-inset-top,0px) + 16px))}
+html.appmode .scr .s-x,html.appmode .scr .s-lang{top:max(54px,calc(env(safe-area-inset-top,0px) + 10px))}
+.au-appbar,.au-scrim{display:none}
+html.appmode .au-appbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(56px + env(safe-area-inset-bottom,0px));padding:0 12px env(safe-area-inset-bottom,0px) 16px;align-items:center;gap:12px;background:#0b0b0c;border-top:1px solid rgba(255,255,255,.1);color:#fff}
+.au-ab-why{flex:1;min-width:0;display:flex;align-items:center;gap:9px;background:none;border:0;color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;padding:0}
+.au-ab-why i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);flex:none}
+.au-ab-why span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.au-ab-why em{font-style:normal;color:rgba(255,255,255,.6);margin-left:auto;flex:none;font-size:13px}
+.au-appbar .au-lsw{background:rgba(255,255,255,.12)}
+.au-appbar .au-lsw button{color:rgba(255,255,255,.75);padding:5px 11px}
+.au-appbar .au-lsw button.on{background:#fff;color:#000}
+html.appmode #panel{position:fixed;left:0;right:0;bottom:0;z-index:80;max-width:none;width:auto;margin:0 auto;border-radius:24px 24px 0 0;max-height:78%;overflow:auto;transform:translateY(105%);transition:transform .3s cubic-bezier(.3,.7,.2,1);padding-bottom:calc(26px + env(safe-area-inset-bottom,0px))}
+html.appmode.au-open #panel{transform:none}
+html.appmode.au-open .au-scrim{display:block;position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.5)}
+
+/* ?tour — 1280×720 walkthrough frames (record-video.sh renders them into assets/walkthrough.mp4) */
+.au-tour{display:none}
+html.tourmode,html.tourmode body{overflow:hidden;background:var(--st-ground)}
+html.tourmode body *{visibility:hidden}
+html.tourmode .phone,html.tourmode .phone *,html.tourmode .au-tour,html.tourmode .au-tour *{visibility:visible}
+html.tourmode .phone{position:fixed;left:170px;top:44px;margin:0;transform:scale(.755);transform-origin:0 0;box-shadow:0 0 0 1.5px #3a3d42,0 34px 80px rgba(0,0,0,.22);z-index:5;max-width:none}
+html.tourmode .au-tour{display:block;position:fixed;inset:0;z-index:6;pointer-events:none;color:var(--st-ink)}
+.au-tb{position:absolute;left:590px;top:30px;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600}
+.au-tb img{width:26px;height:26px;border-radius:7px}
+.au-tb small{font-size:16px;font-weight:400;color:var(--st-ink2)}
+.au-tby{position:absolute;right:48px;top:32px;font-size:14px;color:var(--st-ink3)}
+.au-tcap{position:absolute;left:590px;right:60px;top:50%;transform:translateY(-50%)}
+.au-tk{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:600}
+.au-tk i{width:9px;height:9px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-tk.au-ctx{color:var(--st-ink2)}.au-tk.au-ctx i{background:var(--st-ink3);box-shadow:none}
+.au-tt{font-size:46px;line-height:1.06;font-weight:700;letter-spacing:-.035em;margin:14px 0 14px;text-wrap:balance}
+.au-tl{font-size:23px;line-height:1.36;color:var(--st-ink2);letter-spacing:-.01em;margin:0;max-width:28ch}
+.au-to{margin-top:28px;padding-top:22px;border-top:1px solid var(--st-hair)}
+.au-to small{display:block;font-size:14px;font-weight:600;color:var(--st-ink3)}
+.au-to b{display:inline-block;font-size:62px;font-weight:700;letter-spacing:-.045em;line-height:1.08;color:var(--st-accent);margin-top:4px}
+.au-to span{display:block;font-size:16px;color:var(--st-ink2);margin-top:2px}
+.au-tprog{position:absolute;left:48px;right:48px;bottom:22px;height:4px;border-radius:3px;background:var(--st-hair);overflow:hidden}
+.au-tprog i{display:block;height:100%;background:var(--st-hi)}
+.au-ttap{position:absolute;left:0;top:0;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,255,255,.5);box-shadow:0 0 0 2.5px rgba(255,255,255,.9),0 6px 16px rgba(0,0,0,.35);opacity:0}
+.au-tintro,.au-tend{position:absolute;inset:0;background:var(--st-ground);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0}
+.au-tintro .au-lede{margin-top:18px}
+.au-te-h{font-size:46px;line-height:1.08;font-weight:700;letter-spacing:-.035em;margin:0;max-width:18ch;text-wrap:balance}
+.au-te-n{display:flex;gap:64px;margin-top:30px}
+.au-te-n small{display:block;font-size:14px;color:var(--st-ink2)}
+.au-te-n b{display:block;font-size:76px;font-weight:700;letter-spacing:-.045em;line-height:1;color:var(--st-accent);margin:4px 0 6px}
+.au-te-n span{font-size:15px;color:var(--st-ink2)}
+.au-te-q{display:flex;align-items:center;gap:18px;margin-top:34px;background:var(--st-card);border-radius:20px;padding:12px 24px 12px 12px;text-align:left}
+.au-te-q img{width:104px;height:104px;border-radius:10px;image-rendering:pixelated}
+.au-te-q b{display:block;font-size:18px;font-weight:600}
+.au-te-q span{display:block;font-size:15px;color:var(--st-link);margin-top:3px}
+.au-te-f{position:absolute;bottom:44px;left:0;right:0;font-size:13px;color:var(--st-ink3);margin:0}
+
+/* ---------- screen engine (layout only, no colours) ---------- */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--b-bg);color:var(--b-ink);font-family:var(--b-font);
+     transform:translateX(100%);transition:transform .32s cubic-bezier(.3,.7,.2,1);overflow:hidden;text-align:left;line-height:normal;font-size:16px}
+.scr.is-active{transform:none;z-index:2}.scr.is-past{transform:translateX(-28%)}.scr.under{transform:none;z-index:1}
+.scr.sheet{transform:translateY(100%)}.scr.sheet.is-active{transform:none}
+.nofx,.nofx *{transition:none!important}
+.shot .scr{transition:none!important}
+/* ?phone — just the device at (10,10), for shoot.sh and hero-stills.sh (&clear = transparent ground) */
+.phoneonly body{background:#141615}
+.phoneonly.clear body{background:transparent}
+.phoneonly body *{visibility:hidden}
+.phoneonly .phone,.phoneonly .phone *{visibility:visible}
+.phoneonly .phone{position:fixed;top:10px;left:10px;z-index:99;box-shadow:none;max-width:none;margin:0}
+
+/* SCREENS:START — styles for the app's screens. RULE: colours only via var(--b-*), or white/black
+   with alpha (scrims, shadows). RULE: no class name that the audit page above already uses
+   (.hero .btn .chip .list .idea .note .stat .band .num .hint .display .split …) — brand-check refuses collisions. */
+.tt{background:var(--b-grad);color:var(--b-ink)}
+.tt-in{flex:1;display:flex;flex-direction:column;align-items:stretch;padding:58px 22px 30px;position:relative;z-index:1;min-height:0}
+.tt-logo{display:block;height:19px;width:auto;margin:6px auto 0}
+.tt-prog{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:30px}
+.tt-bar{width:150px;height:5px;border-radius:var(--b-pill);background:var(--b-track);overflow:hidden}
+.tt-bar i{display:block;height:100%;background:var(--b-fill);border-radius:var(--b-pill)}
+.tt-step{font:600 12px var(--b-font);color:var(--b-ink2)}
+.tt-q{font:700 21px/1.25 var(--b-font);text-align:center;margin:0;letter-spacing:-.01em}
+.tt-s{font:400 15px/1.4 var(--b-font);color:var(--b-ink2);text-align:center;margin:8px 0 0}
+.tt-gap{flex:1}
+.tt-tiles{display:flex;gap:14px;justify-content:center;margin-top:26px}
+.tt-tile{flex:none;width:150px;height:206px;border-radius:var(--b-radius);border:1.5px solid var(--b-line);background:var(--b-surface);padding:0;overflow:hidden;position:relative;cursor:pointer;display:flex;flex-direction:column;font-family:var(--b-font)}
+.tt-tile img{display:block;width:100%;height:150px;object-fit:cover}
+.tt-tile::after{content:"";position:absolute;left:0;right:0;top:96px;height:56px;background:linear-gradient(180deg,transparent,var(--b-surface))}
+.tt-tile span{position:relative;z-index:1;margin:auto 0 16px;text-align:center;font:600 15px var(--b-font);color:var(--b-ink2)}
+.tt-tile.on{border:2px solid var(--b-ink)}
+.tt-tile.on span{color:var(--b-ink)}
+.tt-cta{display:block;width:100%;border:0;border-radius:var(--b-pill);background:var(--b-primary);color:var(--b-primary-ink);font:600 17px var(--b-font);padding:14px;cursor:pointer;text-align:center}
+.tt-link{display:block;background:none;border:0;color:var(--b-ink);font:500 15px var(--b-font);padding:14px 0 0;cursor:pointer;width:100%;text-align:center}
+.tt-rows{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.tt-row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:1.5px solid var(--b-line);border-radius:var(--b-radius);background:rgba(255,255,255,.08);color:var(--b-ink);padding:14px;cursor:pointer;font-family:var(--b-font)}
+.tt-row.on{border:2px solid var(--b-ink);background:rgba(255,255,255,.16)}
+.tt-ic{flex:none;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center}
+.tt-ic svg{width:22px;height:22px;fill:none;stroke:var(--b-ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tt-row b{display:block;font:600 16px var(--b-font)}
+.tt-row small{display:block;font:400 13.5px/1.35 var(--b-font);color:var(--b-ink2);margin-top:2px}
+.tt-maps{display:flex;gap:10px;margin-top:24px}
+.tt-map{flex:1;border:1.5px solid var(--b-line);border-radius:var(--b-radius);background:rgba(255,255,255,.08);padding:0;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;font-family:var(--b-font)}
+.tt-map img{display:block;width:100%;height:132px;object-fit:cover}
+.tt-map span{display:block;padding:9px 4px;font:600 13.5px var(--b-font);color:var(--b-ink);text-align:center}
+.tt-map.on{border:2px solid var(--b-ink)}
+.tt-dl{margin-top:16px;border-radius:var(--b-radius);background:rgba(0,0,0,.16);padding:13px 14px}
+.tt-dlh{display:flex;align-items:center;gap:8px;font:600 14px var(--b-font)}
+.tt-dlh svg{width:18px;height:18px;flex:none;fill:none;stroke:var(--b-ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tt-dlh em{margin-left:auto;font-style:normal;font-weight:500;color:var(--b-ink2)}
+.tt-dlb{height:5px;border-radius:var(--b-pill);background:rgba(255,255,255,.22);margin-top:10px;overflow:hidden}
+.tt-dlb i{display:block;height:100%;width:38%;background:var(--b-accent2);border-radius:var(--b-pill)}
+.tt-dls{font:400 12.5px/1.4 var(--b-font);color:var(--b-ink2);margin:8px 0 0}
+.tt-card{margin-top:22px;border-radius:14px;background:rgba(0,0,0,.16);padding:4px 14px}
+.tt-li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid rgba(255,255,255,.12)}
+.tt-li:first-child{border-top:0}
+.tt-th{flex:none;width:44px;height:44px;border-radius:8px;object-fit:cover;border:1px solid var(--b-line)}
+.tt-li b{display:block;font:600 15.5px var(--b-font)}
+.tt-li small{display:block;font:400 13px/1.35 var(--b-font);color:var(--b-ink2);margin-top:1px}
+.tt-ok{flex:none;width:26px;height:26px;border-radius:50%;background:var(--b-accent2);display:grid;place-items:center}
+.tt-ok svg{width:15px;height:15px;fill:none;stroke:var(--b-ink);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.tt-on{margin-top:18px}
+.tt-onh{font:600 13px var(--b-font);color:var(--b-ink2);letter-spacing:.02em;margin:0 0 4px}
+.tt-x{position:absolute;top:56px;right:16px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(0,0,0,.18);color:var(--b-ink);font:500 17px var(--b-font);cursor:pointer;z-index:3}
+.tt-h{font:800 26px/1.15 var(--b-font);letter-spacing:-.02em;margin:22px 0 0}
+.tt-sub{font:400 15px/1.4 var(--b-font);color:var(--b-ink2);margin:8px 0 0}
+.tt-ticks{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.tt-ticks li{display:flex;gap:10px;align-items:flex-start;font:500 15px/1.35 var(--b-font)}
+.tt-ticks svg{flex:none;width:18px;height:18px;margin-top:1px;fill:none;stroke:var(--b-ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.tt-plans{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.tt-plan{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--b-line);border-radius:12px;background:rgba(0,0,0,.14);color:var(--b-ink);padding:13px 14px;cursor:pointer;position:relative;font-family:var(--b-font)}
+.tt-plan.on{border:2px solid var(--b-ink);background:rgba(255,255,255,.14)}
+.tt-rad{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--b-ink2)}
+.tt-plan.on .tt-rad{border:6px solid var(--b-ink)}
+.tt-pn{flex:1;min-width:0}
+.tt-pn b{display:block;font:700 16px var(--b-font)}
+.tt-pn small{display:block;font:400 13px var(--b-font);color:var(--b-ink2);margin-top:2px;white-space:nowrap}
+.tt-pp{font:700 17px var(--b-font);white-space:nowrap}
+.tt-badge{position:absolute;top:-10px;right:12px;background:var(--b-accent2);color:var(--b-ink);font:700 11.5px var(--b-font);padding:3px 9px;border-radius:var(--b-pill);letter-spacing:.02em;white-space:nowrap}
+.tt-trial{font:400 13px/1.4 var(--b-font);color:var(--b-ink2);text-align:center;margin:14px 0 12px}
+.tt-proof{display:flex;justify-content:center;align-items:center;gap:8px;font:600 13px var(--b-font);color:var(--b-ink);margin-top:12px}
+.tt-proof i{font-style:normal;color:var(--b-ink2);font-weight:400}
+.tt-legal{display:flex;justify-content:center;gap:18px;font:400 12px var(--b-font);color:var(--b-ink2);margin-top:10px}
+.tt-sheetbg{background:rgba(0,0,0,.5)}
+.tt-sheet{margin-top:auto;border-radius:22px 22px 0 0;background:linear-gradient(180deg,var(--b-bg),var(--b-deep));padding:12px 22px 34px;position:relative}
+.tt-grab{width:40px;height:5px;border-radius:var(--b-pill);background:rgba(255,255,255,.4);margin:0 auto 14px}
+.tt-big{display:flex;align-items:baseline;gap:8px;margin-top:18px}
+.tt-big b{font:800 40px var(--b-font);letter-spacing:-.02em;white-space:nowrap}
+.tt-big span{font:500 15px var(--b-font);color:var(--b-ink2)}
+.tt-fine{font:400 13px/1.4 var(--b-font);color:var(--b-ink2);margin:10px 0 18px}
+.tt-tog{flex:none;width:46px;height:28px;border-radius:var(--b-pill);background:var(--b-accent2);position:relative}
+.tt-tog::after{content:"";position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:50%;background:var(--b-ink)}
+.tt-hero{display:block;width:100%;height:150px;object-fit:cover;border-radius:12px;margin-top:16px;border:1px solid var(--b-line)}
+/* SCREENS:END */
+</style>
+</head>
+<body>
+
+<nav class="au-nav" aria-label="Sections">
+  <div class="au-nav-in">
+    <div class="au-brand">
+      <img src="assets/brand/appstore-icon.jpg" alt="">
+      <span>Growth Audit <small>· TomTom GO Expert</small></span>
+    </div>
+    <a class="au-opt" href="#why">Why this</a>
+    <a href="#ideas">Five ideas</a>
+    <a href="#prototype">Prototype</a>
+    <a class="au-opt" href="#compare" id="navCompare" hidden>Paywall</a>
+  </div>
+</nav>
+
+<header class="au-top-hero" id="top">
+  <div class="au-wrap">
+    <p class="au-eyebrow"><i></i>Growth Audit · October 2026</p>
+    <h1 class="au-display">TomTom GO Expert</h1>
+    <p class="au-lede">Five ideas to turn more drivers into subscribers. <span>Each one built into your own onboarding, so you can tap through it.</span></p>
+    <p class="au-byline">Prepared by Adapty for the TomTom GO Expert team</p>
+    <div class="au-ctas">
+      <a class="au-btn" href="#ideas">See the five ideas</a>
+      <a class="au-lnk" href="#prototype">Open the prototype</a>
+      <button type="button" class="au-lnk au-play" id="heroVideo" hidden>Watch the 30-second walkthrough</button>
+    </div>
+  </div>
+  <!-- filled from CONTENT.hero: three screen ids → assets/hero/<id>.png (make them with hero-stills.sh) -->
+  <div class="au-phones" id="heroPhones" aria-label="Three screens from the prototype"></div>
+</header>
+
+<section class="au-sec au-white" id="why">
+  <div class="au-wrap">
+    <div class="au-split">
+      <div>
+        <p class="au-kicker">Why you’re seeing this</p>
+        <h2 class="au-h2">30,000 subscription apps taught us what moves conversion. <span>Here’s what we’d test first at TomTom GO Expert.</span></h2>
+      </div>
+      <div>
+        <p>Adapty runs subscriptions for <b>more than 30,000 apps</b>, so we see which onboarding and paywall changes lift revenue across the whole market, not just inside one app.</p>
+        <p>We pointed that at TomTom GO Expert. We took <b>your own screens, copy and prices</b> from your App Store listing, your site and your help pages, and rebuilt the path from install to paywall around the five ideas with the most potential.</p>
+      </div>
+    </div>
+    <div class="au-stats">
+      <div class="au-stat"><b>30,000+</b><span>apps run their subscriptions on Adapty</span></div>
+      <div class="au-stat"><b>5</b><span>ideas, each built as a working screen</span></div>
+      <div class="au-stat"><b>0</b><span>changes to your art direction</span></div>
+    </div>
+    <div class="au-notes">
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg></div>
+        <h3>Five ideas, not fifteen</h3>
+        <p>We’re not proposing to rebuild every screen. These are the changes with the highest potential, ranked by what we’d test first.</p>
+      </div>
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M3.5 12h17"/></svg></div>
+        <h3>Your design, not ours</h3>
+        <p>Every colour, control and price in the prototype is TomTom GO Expert’s. We changed the order and what gets shown.</p>
+      </div>
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4H15"/></svg></div>
+        <h3>We hope you haven’t tried these yet</h3>
+        <p>We work from the outside, so we can’t see your live flow or your test history. If you’ve already run one of these, tell us and we’ll go deeper on the rest.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="au-sec" id="ideas">
+  <div class="au-wrap">
+    <div class="au-ideas-h">
+      <p class="au-kicker">The shortlist</p>
+      <h2 class="au-h2">Five ideas. <span>Ranked by what we’d test first.</span></h2>
+    </div>
+    <div class="au-list" id="ideaList"></div>
+    <div class="au-band">
+      <div>
+        <p class="au-k">Potential outcome, based on Adapty data</p>
+        <h3>Together they turn onboarding and paywall into one flow: what you ask decides what you show, which plan you lead with, and what happens when someone says no.</h3>
+        <p class="au-fn" id="bandFn"></p>
+        <a class="au-btn" href="#prototype">Tap through the prototype</a>
+      </div>
+      <div class="au-nums" id="bandNums"></div>
+    </div>
+  </div>
+</section>
+
+<section class="au-sec au-white" id="prototype">
+  <div class="au-wrap">
+    <div class="au-proto-h">
+      <p class="au-kicker">The prototype</p>
+      <h2 class="au-h2">Every idea, inside your own onboarding.</h2>
+      <p>Tap through it like a new user, or jump straight to an idea. Blue numbers mark the screens that carry one.</p>
+    </div>
+    <div class="au-langrow" id="langRow" hidden><span>Prototype language</span><div class="au-lsw" id="langSw" role="group" aria-label="Prototype language"></div></div>
+    <div class="au-seg" id="chips" role="tablist" aria-label="Screens"></div>
+    <div class="au-stage">
+      <div class="phone"><div class="phone-in">
+        <div class="island"></div>
+        <div class="sbar"><span>9:41</span><span>●●● ▮</span></div>
+
+<!-- SCREENS:START — one section.scr[data-id=ID] per screen, in flow order. Only the screens an idea lands on,
+     plus the context needed to read the flow (~8–10). Wiring: data-go="<id>" · data-back · data-pick="key:value"
+     (+ data-advance="<id>") · data-toggle="key:value" · data-bind="key" / "label:key" / "count:key" ·
+     data-requires="key" · data-show="key:value" · data-input="key" · class="scr sheet" slides up (offer paywall).
+     RULE: images only from assets/ (their app, their site, App Store) — never stock, never hotlinked.
+     Extras: data-t="key" = translatable (markup is CONTENT.langs[0]; other languages in CONTENT.i18n) — keep data-t on
+     leaf-ish elements, never on an element that also carries data-bind/data-pick/data-show;
+     data-langtoggle cycles the language (their own language pill); data-aside keeps a screen out of the flow
+     (the paywall TODAY, rendered only for the side-by-side still). -->
+
+<section class="scr tt" data-id="vehicle">
+  <div class="tt-in s-pad">
+    <img class="tt-logo" src="assets/brand/logo-white.svg" alt="tomtom">
+    <div class="tt-prog"><div class="tt-bar"><i style="width:25%"></i></div><span class="tt-step" data-t="step1">1 of 4</span></div>
+    <div class="tt-gap"></div>
+    <h1 class="tt-q" data-t="v_q">What vehicle do you drive?</h1>
+    <p class="tt-s" data-t="v_s">Choose your vehicle. It sets your routes and your plan.</p>
+    <div class="tt-tiles">
+      <button class="tt-tile" data-pick="vehicle:truck"><img src="assets/crop/tile-truck.png" alt=""><span data-t="truck">Truck</span></button>
+      <button class="tt-tile" data-pick="vehicle:car"><img src="assets/crop/tile-car.png" alt=""><span data-t="car">Car</span></button>
+    </div>
+    <div class="tt-gap"></div>
+    <button class="tt-cta" data-go="reason" data-t="continue">Continue</button>
+    <button class="tt-link" data-t="login">Login</button>
+  </div>
+</section>
+
+<section class="scr tt" data-id="reason">
+  <div class="tt-in s-pad">
+    <img class="tt-logo" src="assets/brand/logo-white.svg" alt="tomtom">
+    <div class="tt-prog"><div class="tt-bar"><i style="width:50%"></i></div><span class="tt-step" data-t="step2">2 of 4</span></div>
+    <div class="tt-gap"></div>
+    <h1 class="tt-q" data-t="r_q">What do you drive for most?</h1>
+    <p class="tt-s" data-t="r_s">We’ll switch on what matters for it.</p>
+    <div class="tt-rows">
+      <button class="tt-row" data-pick="reason:commute" data-advance="map"><span class="tt-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span><b data-t="r1">Daily commute</b><small data-t="r1s">Same roads, different traffic every day</small></span></button>
+      <button class="tt-row" data-pick="reason:trips" data-advance="map"><span class="tt-ic"><svg viewBox="0 0 24 24"><path d="M5 20 9.5 4M19 20 14.5 4M12 6v2M12 11v2M12 16v2"/></svg></span><span><b data-t="r2">Road trips and holidays</b><small data-t="r2s">New roads, other countries, patchy signal</small></span></button>
+      <button class="tt-row" data-pick="reason:work" data-advance="map"><span class="tt-ic"><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></span><span><b data-t="r3">Driving for work</b><small data-t="r3s">Deliveries, sites, tight schedules</small></span></button>
+    </div>
+    <div class="tt-gap"></div>
+    <button class="tt-link" data-back data-t="back">Back</button>
+  </div>
+</section>
+
+<section class="scr tt" data-id="map">
+  <div class="tt-in s-pad">
+    <img class="tt-logo" src="assets/brand/logo-white.svg" alt="tomtom">
+    <div class="tt-prog"><div class="tt-bar"><i style="width:75%"></i></div><span class="tt-step" data-t="step3">3 of 4</span></div>
+    <div class="tt-gap"></div>
+    <h1 class="tt-q" data-t="m_q">Where do you drive?</h1>
+    <p class="tt-s" data-t="m_s">Your map starts downloading now, so you can drive offline.</p>
+    <div class="tt-maps">
+      <button class="tt-map" data-pick="map:de"><img src="assets/site/map-germany.jpg" alt=""><span data-t="m_de">Germany</span></button>
+      <button class="tt-map" data-pick="map:nl"><img src="assets/site/map-netherlands.jpg" alt=""><span data-t="m_nl">Netherlands</span></button>
+      <button class="tt-map" data-pick="map:eu"><img src="assets/site/map-europe.jpg" alt=""><span data-t="m_eu">All of Europe</span></button>
+    </div>
+    <div class="tt-dl">
+      <div class="tt-dlh"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span data-t="dl">Downloading</span>&nbsp;<span data-bind="label:map"></span><em class="tt-pct">38%</em></div>
+      <div class="tt-dlb"><i></i></div>
+      <p class="tt-dls" data-t="dls">Over Wi‑Fi, while you finish. No data roaming charges.</p>
+    </div>
+    <div class="tt-gap"></div>
+    <button class="tt-cta" data-go="setup" data-t="continue2">Continue</button>
+  </div>
+</section>
+
+<section class="scr tt" data-id="setup">
+  <div class="tt-in s-pad">
+    <img class="tt-logo" src="assets/brand/logo-white.svg" alt="tomtom">
+    <div class="tt-prog"><div class="tt-bar"><i style="width:100%"></i></div><span class="tt-step" data-t="step4">4 of 4</span></div>
+    <h1 class="tt-h" style="text-align:center" data-t="su_h">Your GO Expert is set up</h1>
+    <div class="tt-card">
+      <div class="tt-li"><img class="tt-th" data-show="vehicle:car" src="assets/crop/tile-car.png" alt=""><img class="tt-th" data-show="vehicle:truck" src="assets/crop/tile-truck.png" alt=""><span style="flex:1"><b data-bind="label:vehicle"></b><small data-t="su_v">Vehicle profile · routes for it</small></span><span class="tt-ok"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
+      <div class="tt-li"><img class="tt-th tt-mth" src="assets/site/map-germany.jpg" alt=""><span style="flex:1"><b data-bind="label:map"></b><small data-t="su_m">Offline map · downloading over Wi‑Fi</small></span><span class="tt-ok"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
+    </div>
+    <div class="tt-on">
+      <p class="tt-onh"><span data-t="su_on">Switched on for</span> <span data-bind="label:reason"></span></p>
+      <div class="tt-card" style="margin-top:6px">
+        <div data-show="reason:commute">
+          <div class="tt-li"><span style="flex:1"><b data-t="f_traffic">Live traffic</b><small data-t="f_traffic_s">Alerts for accidents and roadworks, and the faster way round</small></span></div>
+          <div class="tt-li"><span style="flex:1"><b data-t="f_eta">Accurate ETAs</b><small data-t="f_eta_s">Know when you’ll arrive before you leave</small></span></div>
+          <div class="tt-li"><span style="flex:1"><b data-t="f_lane">Lane guidance</b><small data-t="f_lane_s">Know which lane to take before the exit</small></span></div>
+        </div>
+        <div data-show="reason:trips">
+          <div class="tt-li"><span style="flex:1"><b data-t="f_off">Offline maps</b><small data-t="f_off_s">Navigate anywhere, even when the signal is lost</small></span></div>
+          <div class="tt-li"><span style="flex:1"><b data-t="f_fuel">Fuel stops</b><small data-t="f_fuel_s">Stations for your fuel type along the route</small></span></div>
+          <div class="tt-li"><span style="flex:1"><b data-t="f_cp">Apple CarPlay</b><small data-t="f_cp_s">Directions on your dashboard, at no extra cost</small></span></div>
+        </div>
+        <div data-show="reason:work">
+          <div class="tt-li"><span style="flex:1"><b data-t="f_route">Routes for your vehicle</b><small data-t="f_route_s">Around low bridges, restricted zones and emission areas</small></span></div>
+          <div class="tt-li"><span style="flex:1"><b data-t="f_poi">Stops for your vehicle</b><small data-t="f_poi_s">Fuel, parking and rest stops along the route</small></span></div>
+          <div class="tt-li"><span style="flex:1"><b data-t="f_traffic2">Live traffic</b><small data-t="f_traffic2_s">Accurate ETAs to keep you on schedule</small></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="tt-gap"></div>
+    <button class="tt-cta" data-go="paywall" data-t="continue3">Continue</button>
+  </div>
+</section>
+
+<section class="scr tt" data-id="paywall">
+  <button class="tt-x s-x" data-go="offer" aria-label="Close">✕</button>
+  <div class="tt-in s-pad">
+    <img class="tt-logo" src="assets/brand/logo-white.svg" alt="tomtom">
+    <h1 class="tt-h" data-show="reason:commute"><span data-t="pw_h1">Skip the jams on your commute</span></h1>
+    <h1 class="tt-h" data-show="reason:trips"><span data-t="pw_h2">Road trips, with maps that work offline</span></h1>
+    <h1 class="tt-h" data-show="reason:work"><span data-t="pw_h3">Arrive on time, every time</span></h1>
+    <p class="tt-sub tt-pwsub">For your car, with the map of Germany.</p>
+    <img class="tt-hero" src="assets/crop/traffic.jpg" alt="">
+    <ul class="tt-ticks">
+      <li data-show="reason:commute"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-t="t_c1">Live traffic and accurate ETAs</span></li>
+      <li data-show="reason:trips"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-t="t_t1">Offline maps, no roaming charges</span></li>
+      <li data-show="reason:work"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-t="t_w1">Routes for your vehicle’s size</span></li>
+      <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-t="t_2">Lane guidance and clear turn-by-turn directions</span></li>
+      <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-t="t_3">No ads. Works with Apple CarPlay</span></li>
+    </ul>
+    <div class="tt-gap"></div>
+    <div class="tt-plans" data-show="vehicle:car">
+      <button class="tt-plan" data-pick="plan:year"><span class="tt-badge" data-t="c_save">SAVE 64%</span><span class="tt-rad"></span><span class="tt-pn"><b data-t="c_yn">12 months</b><small data-t="c_ym">$2.50 a month, billed yearly</small></span><span class="tt-pp" data-t="c_yp">$29.99</span></button>
+      <button class="tt-plan" data-pick="plan:month"><span class="tt-rad"></span><span class="tt-pn"><b data-t="c_mn">1 month</b><small data-t="c_mm">Billed monthly</small></span><span class="tt-pp" data-t="c_mp">$6.99</span></button>
+    </div>
+    <div class="tt-plans" data-show="vehicle:truck">
+      <button class="tt-plan" data-pick="plan:year"><span class="tt-badge" data-t="k_save">SAVE 62%</span><span class="tt-rad"></span><span class="tt-pn"><b data-t="k_yn">12 months · Truck</b><small data-t="k_ym">$7.50 a month, billed yearly</small></span><span class="tt-pp" data-t="k_yp">$89.99</span></button>
+      <button class="tt-plan" data-pick="plan:month"><span class="tt-rad"></span><span class="tt-pn"><b data-t="k_mn">1 month · Truck</b><small data-t="k_mm">Billed monthly</small></span><span class="tt-pp" data-t="k_mp">$19.99</span></button>
+    </div>
+    <p class="tt-trial" data-t="trial">Free trial first. You’re charged only when it ends, and nothing if you cancel before.</p>
+    <button class="tt-cta" data-go="later" data-t="pw_cta">Start free trial</button>
+    <div class="tt-proof"><span data-t="rating">★ 4.2 · 2.5K App Store ratings</span><i>·</i><span data-t="drivers">800k+ drivers</span></div>
+    <div class="tt-legal"><span data-t="restore">Restore purchase</span><span data-t="terms">Terms</span><span data-t="privacy">Privacy</span></div>
+  </div>
+</section>
+
+<section class="scr sheet tt-sheetbg" data-id="offer">
+  <div class="tt-sheet">
+    <div class="tt-grab"></div>
+    <div data-show="vehicle:car">
+      <h2 class="tt-h" style="margin-top:4px" data-t="o_h">Not ready for a whole year?</h2>
+      <p class="tt-sub" data-t="o_s">Take six months instead. Same app, same maps, no year-long commitment.</p>
+      <div class="tt-big"><b data-t="o_p">$19.99</b><span data-t="o_pm">for 6 months · $3.33 a month</span></div>
+      <p class="tt-fine" data-t="o_f">Renews every 6 months. Cancel anytime in your App Store settings.</p>
+      <button class="tt-cta" data-go="later" data-t="o_cta">Choose 6 months</button>
+    </div>
+    <div data-show="vehicle:truck">
+      <h2 class="tt-h" style="margin-top:4px" data-t="ok_h">Start with one month</h2>
+      <p class="tt-sub" data-t="ok_s">Truck routes, truck stops and live traffic, one month at a time.</p>
+      <div class="tt-big"><b data-t="ok_p">$19.99</b><span data-t="ok_pm">a month · Truck</span></div>
+      <p class="tt-fine" data-t="ok_f">Renews monthly. Cancel anytime in your App Store settings.</p>
+      <button class="tt-cta" data-go="later" data-t="ok_cta">Choose 1 month</button>
+    </div>
+    <button class="tt-link" data-go="later" data-t="o_no">No thanks</button>
+  </div>
+</section>
+
+<section class="scr tt" data-id="later">
+  <div class="tt-in s-pad">
+    <img class="tt-logo" src="assets/brand/logo-white.svg" alt="tomtom">
+    <div class="tt-gap"></div>
+    <div class="tt-ok" style="width:56px;height:56px;margin:0 auto"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h1 class="tt-h" style="text-align:center;margin-top:18px" data-t="l_h">You’re in. One last step before you drive.</h1>
+    <p class="tt-s" data-t="l_s">Your phone will ask you to confirm each one.</p>
+    <div class="tt-card">
+      <div class="tt-li"><span class="tt-ic"><svg viewBox="0 0 24 24"><path d="M5 12a10 10 0 0 1 14 0M8 15a6 6 0 0 1 8 0"/><circle cx="12" cy="18.5" r="1.2"/></svg></span><span style="flex:1"><b data-t="l_1">Share info with TomTom</b><small data-t="l_1s">Needed for live traffic, online search and routing</small></span><span class="tt-tog"></span></div>
+      <div class="tt-li"><span class="tt-ic"><svg viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg></span><span style="flex:1"><b data-t="l_2">Notifications</b><small data-t="l_2s">Allow TomTom GO to send you notifications</small></span><span class="tt-tog"></span></div>
+    </div>
+    <div class="tt-gap"></div>
+    <button class="tt-cta" data-t="l_cta">Start driving</button>
+  </div>
+</section>
+
+<section class="scr tt" data-id="today" data-aside>
+  <div class="tt-in s-pad">
+    <img class="tt-logo" src="assets/brand/logo-white.svg" alt="tomtom">
+    <div class="tt-prog"><div class="tt-bar"><i style="width:18%"></i></div></div>
+    <div class="tt-gap"></div>
+    <h1 class="tt-q" data-t="v_q0">What vehicle do you drive?</h1>
+    <p class="tt-s" data-t="v_s0">Choose your vehicle</p>
+    <div class="tt-tiles">
+      <div class="tt-tile"><img src="assets/crop/tile-truck.png" alt=""><span data-t="truck0">Truck</span></div>
+      <div class="tt-tile"><img src="assets/crop/tile-car.png" alt=""><span data-t="car0">Car</span></div>
+    </div>
+    <div class="tt-gap"></div>
+    <button class="tt-cta" data-t="continue0">Continue</button>
+    <button class="tt-link" data-t="login0">Login</button>
+  </div>
+</section>
+<!-- SCREENS:END -->
+
+      </div></div>
+      <div class="au-pn" id="panel" aria-live="polite"></div>
+    </div>
+    <p class="au-hint">Switch the first screen to Truck to see the Truck plan. Close the paywall with ✕ to see idea 5.</p>
+    <!-- shown when CONTENT.liveUrl is set: assets/qr-app.png = qr.swift "<liveUrl>?app" -->
+    <div class="au-qr" id="qrCard" hidden><img src="assets/qr-app.png" alt="QR code that opens the prototype full screen"><div><b>Try it on your phone</b><p>Scan to open the prototype full screen, the way a new user would see it.</p></div></div>
+    <div class="au-mobw" id="qrMob" hidden><a class="au-btn" href="?app">Open it full screen</a></div>
+  </div>
+</section>
+
+<!-- the paywall TODAY vs PROPOSED — built from CONTENT.compare (stills: assets/hero/<today>.png, <proposed>.png) -->
+<section class="au-sec" id="compare" hidden><div class="au-wrap" id="cmpBody"></div></section>
+
+<footer class="au-foot" id="sources">
+  <div class="au-wrap">
+    <details id="srcDetails">
+      <summary>Where the numbers come from</summary>
+      <div class="au-srcs" id="srcBody"></div>
+    </details>
+    <p class="au-fine" id="fine"></p>
+    <div class="au-cta-line">
+      <p>Every screen here can be built and A/B tested in Adapty’s Flow Builder, with no app release.</p>
+      <a class="au-btn" href="https://adapty.io/flow-paywall-builder/" target="_blank" rel="noopener">About Flow Builder</a>
+    </div>
+  </div>
+</footer>
+
+<!-- extras: video dialog (CONTENT.video), ?app bar, ?tour overlay (CONTENT.tour) -->
+<dialog class="au-vid" id="vid" aria-label="Walkthrough video">
+  <div class="au-vid-in"><video id="vidEl" controls muted playsinline preload="none"></video></div>
+  <div class="au-vid-bar"><a id="vidDl" download>Download the MP4</a><button type="button" class="au-vid-x" id="vidX">Close</button></div>
+</dialog>
+<div class="au-scrim" id="abScrim"></div>
+<div class="au-appbar" id="appbar">
+  <button type="button" class="au-ab-why" id="abWhy"><i></i><span id="abT"></span><em>Why ↑</em></button>
+  <div class="au-lsw" id="abLang" role="group" aria-label="Language"></div>
+</div>
+<div class="au-tour" aria-hidden="true">
+  <div class="au-tb"><img src="assets/brand/appstore-icon.jpg" alt="">Growth Audit <small>· TomTom GO Expert</small></div>
+  <div class="au-tby">Prepared by Adapty</div>
+  <div class="au-tcap" id="tCap"></div>
+  <div class="au-ttap" id="tTap"></div>
+  <div class="au-tprog"><i id="tProg"></i></div>
+  <div class="au-tintro" id="tIntro"></div>
+  <div class="au-tend" id="tEnd"></div>
+</div>
+
+<!-- CONTENT — all the audit's words and numbers, as data. Schema (brand-check enforces it):
+     ideas  : 3–5 rows, ranked (the audit is five ideas, never fifteen). screen = the screen that shows it.
+     panel  : one entry per screen. idea = its number in ideas (1-based) or 0 for a context screen.
+              why on an idea screen reads "<b>Try</b> X, <b>because</b> Y." in ≤ 45 words; iv = its range.
+              why on a context screen is one line saying what it sets up.
+     hero   : three screen ids shown as stills in the hero — run hero-stills.sh after the screens are done.
+     outcome: combined "up to" numbers, PS-deck style, never above the ceiling of the per-idea ranges.
+     sources: public facts only — App Store, their site, their screens. No sales research on this page.
+     EXTRAS (each one hides itself when left empty):
+     langs  : [{"code":"en","name":"English"},{"code":"es","name":"Español · Spain prices"}] — first = the markup's language
+     i18n   : {"es": {"<data-t key>": "text with {tokens}"}} — every data-t key, for every language after the first
+     prices : {"es": {"yr": "39,99 €", …}} — {tokens} in i18n strings; that storefront's real IAP prices
+     labelsI18n: {"es": {"goal": {"a": "…"}}} — C.labels per language (data-bind="label:…")
+     liveUrl: final Pages URL (QR card + video end card); the QR file encodes liveUrl + "?app"
+     video / poster: "assets/walkthrough.mp4" / "assets/walkthrough-poster.jpg" (record-video.sh)
+     compare: {today, proposed, kicker, title, sub, todayCap, rows:[{h, idea, was, now}], kept} — today = a data-aside screen
+     tour   : {segments:[{id, d, st, tap:[selector-in-screen, ms], pop, reveal, end}], captions:{id:{n|k, t, l, o, ol}},
+              introLede, endTitle} — ~30 s total; the last segment has end:true (the end card) -->
+<script type="application/json" id="content">
+{
+ "app": "TomTom GO Expert",
+ "state": {
+  "vehicle": "car",
+  "reason": "commute",
+  "map": "de",
+  "plan": "year"
+ },
+ "labels": {
+  "vehicle": {
+   "car": "Car",
+   "truck": "Truck"
+  },
+  "reason": {
+   "commute": "your commute",
+   "trips": "road trips",
+   "work": "work"
+  },
+  "map": {
+   "de": "Germany",
+   "nl": "Netherlands",
+   "eu": "Europe"
+  }
+ },
+ "chips": {
+  "vehicle": "Vehicle",
+  "reason": "The drive",
+  "map": "Map",
+  "setup": "Your setup",
+  "paywall": "Paywall",
+  "offer": "Offer on close",
+  "later": "After the trial starts"
+ },
+ "hero": [
+  "setup",
+  "paywall",
+  "map"
+ ],
+ "outcome": {
+  "cr": "+20%",
+  "arpu": "+15%"
+ },
+ "ideas": [
+  {
+   "screen": "setup",
+   "title": "Ask what the drive is for, then show the setup it made",
+   "what": "Onboarding asks one question, car or truck, and the answer only sets a vehicle profile. Ask what the drive is for as well (a daily commute, road trips, work), then show what it switched on: live traffic and ETAs for the commute, offline maps and fuel stops for the road trip.",
+   "impact": "+10–20%",
+   "il": "CR to trial or purchase"
+  },
+  {
+   "screen": "paywall",
+   "title": "Let the vehicle pick the paywall",
+   "what": "You sell a car plan ($29.99 a year or $6.99 a month) and a Truck plan ($89.99 or $19.99). The driver said which one they need on the very first screen. Lead with that plan, name their reason in the headline, and spell out the saving: $29.99 a year is $2.50 a month, 64% less than paying monthly.",
+   "impact": "+10–15%",
+   "il": "ARPU"
+  },
+  {
+   "screen": "later",
+   "title": "Clear the road to the paywall",
+   "what": "Your help pages list five first-run steps: location, a feature tour, a tracking prompt, notifications and a map download. Keep location, move the map in front of the price (idea 4), and ask for tracking and notifications once the trial has started.",
+   "impact": "+10–15%",
+   "il": "CR to trial or purchase"
+  },
+  {
+   "screen": "map",
+   "title": "Their map, downloading, before the price",
+   "what": "Offline maps are one of the first things tomtom.com sells: download over Wi‑Fi, no roaming charges. Let them pick Germany, the Netherlands or all of Europe and start the download before the paywall, so the paywall sells something that is already on their phone.",
+   "impact": "+5–15%",
+   "il": "CR to trial or purchase"
+  },
+  {
+   "screen": "offer",
+   "title": "One shorter plan for people who close it",
+   "what": "Your catalogue already has a 6-month plan at $19.99. When someone closes the paywall, offer it on one sheet: $3.33 a month and no year-long commitment. No countdown, no crossed-out price. Truck drivers get the 1-month Truck plan instead.",
+   "impact": "+5–10%",
+   "il": "ARPU"
+  }
+ ],
+ "panel": {
+  "vehicle": {
+   "idea": 0,
+   "t": "Your first question, kept",
+   "why": "Your own screen, photos and buttons. One line added: the answer now also picks the plan the paywall leads with (idea 2)."
+  },
+  "reason": {
+   "idea": 0,
+   "t": "What the drive is for",
+   "why": "One new question: commute, road trips or work. It decides what the next screens switch on and say. Sets up idea 1."
+  },
+  "map": {
+   "idea": 4,
+   "t": "Their map, before the price",
+   "why": "<b>Try<\/b> moving the map download in front of the paywall and naming the map, <b>because<\/b> an offline map of their own country, downloading over Wi‑Fi, is something they already have before you ask them to pay.",
+   "iv": "CR +5–15%",
+   "il": "to trial or purchase",
+   "also": "Road trips preselect all of Europe; the commute and work preselect Germany."
+  },
+  "setup": {
+   "idea": 1,
+   "t": "Show the setup it made",
+   "why": "<b>Try<\/b> one question about what the drive is for and a setup screen that answers it, <b>because<\/b> a commuter, a road-tripper and a delivery driver want different things from the same app, and today they all see the same flow.",
+   "iv": "CR +10–20%",
+   "il": "to trial or purchase",
+   "also": "Every feature listed is one your listing or site already names. Nothing here is computed."
+  },
+  "paywall": {
+   "idea": 2,
+   "t": "The plan for their vehicle",
+   "why": "<b>Try<\/b> a paywall that leads with the plan for the vehicle they picked, <b>because<\/b> a truck driver needs the Truck plan and a commuter the car plan, where $29.99 a year is $2.50 a month, 64% less than monthly.",
+   "iv": "ARPU +10–15%",
+   "il": "annual and Truck plan mix",
+   "also": "Idea 1 shows here too: the headline names the reason. Your rating and 800k+ drivers sit by the button."
+  },
+  "offer": {
+   "idea": 5,
+   "t": "One shorter plan on close",
+   "why": "<b>Try<\/b> one sheet with your real 6-month plan when someone closes the paywall, <b>because<\/b> people who say no to a year often say yes to a shorter commitment, and $19.99 for six months needs no countdown.",
+   "iv": "ARPU +5–10%",
+   "il": "from people who close the paywall",
+   "also": "Truck drivers see the 1-month Truck plan instead. Switch the first screen to Truck to see it."
+  },
+  "later": {
+   "idea": 3,
+   "t": "Prompts after the trial starts",
+   "why": "<b>Try<\/b> asking for tracking consent and notifications after the trial starts, <b>because<\/b> your first run stacks location, a tour, two system prompts and a map download, and each prompt before the price pulls attention away from it.",
+   "iv": "CR +10–15%",
+   "il": "to trial",
+   "also": "The flow shows the soft prompt. Your app still makes the system call, as it does today."
+  }
+ },
+ "langs": [
+  {
+   "code": "en",
+   "name": "English"
+  },
+  {
+   "code": "de",
+   "name": "Deutsch · Germany prices"
+  }
+ ],
+ "i18n": {
+  "de": {
+   "step1": "1 von 4",
+   "step2": "2 von 4",
+   "step3": "3 von 4",
+   "step4": "4 von 4",
+   "v_q": "Welches Fahrzeug fährst du?",
+   "v_s": "Wähle dein Fahrzeug. Es bestimmt deine Routen und dein Abo.",
+   "truck": "Lkw",
+   "car": "Auto",
+   "continue": "Weiter",
+   "login": "Anmelden",
+   "r_q": "Wofür fährst du am meisten?",
+   "r_s": "Wir schalten ein, was dafür zählt.",
+   "r1": "Pendeln",
+   "r1s": "Jeden Tag dieselbe Strecke, jeden Tag anderer Verkehr",
+   "r2": "Roadtrips und Urlaub",
+   "r2s": "Neue Straßen, andere Länder, schwaches Netz",
+   "r3": "Beruflich unterwegs",
+   "r3s": "Lieferungen, Baustellen, enge Zeitpläne",
+   "back": "Zurück",
+   "m_q": "Wo fährst du?",
+   "m_s": "Deine Karte lädt jetzt schon, damit du offline fahren kannst.",
+   "m_de": "Deutschland",
+   "m_nl": "Niederlande",
+   "m_eu": "Ganz Europa",
+   "dl": "Lädt:",
+   "dls": "Über WLAN, während du fertig wirst. Keine Roaming-Kosten.",
+   "continue2": "Weiter",
+   "continue3": "Weiter",
+   "su_h": "Dein GO Expert ist eingerichtet",
+   "su_v": "Fahrzeugprofil · Routen dafür",
+   "su_m": "Offline-Karte · lädt über WLAN",
+   "su_on": "Eingeschaltet für",
+   "f_traffic": "Live-Verkehr",
+   "f_traffic_s": "Warnungen vor Unfällen und Baustellen, und der schnellere Weg",
+   "f_eta": "Genaue Ankunftszeiten",
+   "f_eta_s": "Wissen, wann du ankommst, bevor du losfährst",
+   "f_lane": "Fahrspurassistent",
+   "f_lane_s": "Wissen, welche Spur du brauchst, vor der Ausfahrt",
+   "f_off": "Offline-Karten",
+   "f_off_s": "Navigation überall, auch ohne Netz",
+   "f_fuel": "Tankstopps",
+   "f_fuel_s": "Tankstellen für deinen Kraftstoff an der Route",
+   "f_cp": "Apple CarPlay",
+   "f_cp_s": "Navigation auf dem Display im Auto, ohne Aufpreis",
+   "f_route": "Routen für dein Fahrzeug",
+   "f_route_s": "Vorbei an niedrigen Brücken, Sperr- und Umweltzonen",
+   "f_poi": "Stopps für dein Fahrzeug",
+   "f_poi_s": "Tankstellen, Parkplätze und Rastplätze an der Route",
+   "f_traffic2": "Live-Verkehr",
+   "f_traffic2_s": "Genaue Ankunftszeiten für deinen Zeitplan",
+   "pw_h1": "Kein Stau mehr auf dem Weg zur Arbeit",
+   "pw_h2": "Roadtrips mit Karten, die offline funktionieren",
+   "pw_h3": "Pünktlich ankommen, jedes Mal",
+   "t_c1": "Live-Verkehr und genaue Ankunftszeiten",
+   "t_t1": "Offline-Karten, keine Roaming-Kosten",
+   "t_w1": "Routen für die Maße deines Fahrzeugs",
+   "t_2": "Fahrspurassistent und klare Abbiegehinweise",
+   "t_3": "Keine Werbung. Mit Apple CarPlay",
+   "c_save": "SPARE {save}",
+   "c_yn": "12 Monate",
+   "c_ym": "{yrm} im Monat, jährlich",
+   "c_yp": "{yr}",
+   "c_mn": "1 Monat",
+   "c_mm": "Monatlich abgerechnet",
+   "c_mp": "{mo}",
+   "k_save": "SPARE {tsave}",
+   "k_yn": "12 Monate · Lkw",
+   "k_ym": "{tyrm} im Monat, jährlich",
+   "k_yp": "{tyr}",
+   "k_mn": "1 Monat · Lkw",
+   "k_mm": "Monatlich abgerechnet",
+   "k_mp": "{tmo}",
+   "trial": "Erst kostenlos testen. Abgebucht wird erst am Ende, und gar nicht, wenn du vorher kündigst.",
+   "pw_cta": "Kostenlos testen",
+   "rating": "★ 4,5 · 26.175 Bewertungen",
+   "drivers": "800.000+ Fahrer",
+   "restore": "Kauf wiederherstellen",
+   "terms": "AGB",
+   "privacy": "Datenschutz",
+   "o_h": "Noch nicht bereit für ein ganzes Jahr?",
+   "o_s": "Nimm stattdessen sechs Monate. Gleiche App, gleiche Karten, keine Jahresbindung.",
+   "o_p": "{six}",
+   "o_pm": "für 6 Monate · {sixm} im Monat",
+   "o_f": "Verlängert sich alle 6 Monate. Jederzeit in den App-Store-Einstellungen kündbar.",
+   "o_cta": "6 Monate wählen",
+   "ok_h": "Starte mit einem Monat",
+   "ok_s": "Lkw-Routen, Lkw-Stopps und Live-Verkehr, Monat für Monat.",
+   "ok_p": "{tmo}",
+   "ok_pm": "im Monat · Lkw",
+   "ok_f": "Verlängert sich monatlich. Jederzeit in den App-Store-Einstellungen kündbar.",
+   "ok_cta": "1 Monat wählen",
+   "o_no": "Nein danke",
+   "l_h": "Geschafft. Noch ein Schritt vor der ersten Fahrt.",
+   "l_s": "Dein iPhone fragt bei jedem noch einmal nach.",
+   "l_1": "Infos mit TomTom teilen",
+   "l_1s": "Nötig für Live-Verkehr, Online-Suche und Online-Routen",
+   "l_2": "Mitteilungen",
+   "l_2s": "TomTom GO erlauben, dir Mitteilungen zu senden",
+   "l_cta": "Losfahren",
+   "v_q0": "Welches Fahrzeug fährst du?",
+   "v_s0": "Wähle dein Fahrzeug",
+   "truck0": "Lkw",
+   "car0": "Auto",
+   "continue0": "Weiter",
+   "login0": "Anmelden"
+  }
+ },
+ "prices": {
+  "de": {
+   "yr": "19,99 €",
+   "yrm": "1,67 €",
+   "mo": "5,99 €",
+   "save": "72 %",
+   "tyr": "89,99 €",
+   "tyrm": "7,50 €",
+   "tmo": "19,99 €",
+   "tsave": "62 %",
+   "six": "13,99 €",
+   "sixm": "2,33 €"
+  }
+ },
+ "labelsI18n": {
+  "de": {
+   "vehicle": {
+    "car": "Auto",
+    "truck": "Lkw"
+   },
+   "reason": {
+    "commute": "den Arbeitsweg",
+    "trips": "Roadtrips",
+    "work": "die Arbeit"
+   },
+   "map": {
+    "de": "Deutschland",
+    "nl": "Niederlande",
+    "eu": "Europa"
+   }
+  }
+ },
+ "liveUrl": "https://eddieatadapty.github.io/tomtom-flow-rebuild/",
+ "video": "assets/walkthrough.mp4",
+ "poster": "assets/walkthrough-poster.jpg",
+ "compare": {
+  "today": "today",
+  "proposed": "vehicle",
+  "kicker": "Your first question, side by side",
+  "title": "Same screen, a bigger job.",
+  "sub": "Today it sets a vehicle profile. Proposed, it also picks the paywall.",
+  "todayCap": "rebuilt from the screen on tomtom.com",
+  "rows": [
+   {
+    "h": "The line under the question",
+    "idea": 2,
+    "was": "Choose your vehicle",
+    "now": "Choose your vehicle. It sets your routes and your plan."
+   },
+   {
+    "h": "What the answer decides",
+    "idea": 2,
+    "was": "The vehicle profile",
+    "now": "The profile, and whether the paywall leads with the car plan or the Truck plan"
+   },
+   {
+    "h": "Progress",
+    "idea": 1,
+    "was": "A bar",
+    "now": "The same bar, plus “1 of 4”: four short steps to a setup that is theirs"
+   },
+   {
+    "h": "What comes next",
+    "idea": 3,
+    "was": "Per your help pages: location, a tour, tracking and notification prompts, a map download",
+    "now": "What the drive is for, their map, their setup. Tracking and notifications wait until the trial has started"
+   }
+  ],
+  "kept": "Kept word for word: your blue gradient, the logo, both photos, the question, Continue and Login."
+ },
+ "tour": {
+  "introLede": "Five ideas to turn more drivers into subscribers. <span>In 30 seconds.<\/span>",
+  "endTitle": "Five ideas, built into your own onboarding.",
+  "segments": [
+   {
+    "id": "vehicle",
+    "d": 3200
+   },
+   {
+    "id": "vehicle",
+    "d": 1600,
+    "st": {
+     "vehicle": "car"
+    },
+    "tap": [
+     ".tt-tile[data-pick=\"vehicle:car\"]",
+     500
+    ]
+   },
+   {
+    "id": "reason",
+    "d": 1500
+   },
+   {
+    "id": "reason",
+    "d": 1500,
+    "st": {
+     "reason": "commute"
+    },
+    "tap": [
+     ".tt-row[data-pick=\"reason:commute\"]",
+     400
+    ]
+   },
+   {
+    "id": "map",
+    "d": 2000,
+    "st": {
+     "map": "de"
+    }
+   },
+   {
+    "id": "map",
+    "d": 1900,
+    "reveal": ".tt-dl",
+    "tap": [
+     ".tt-cta",
+     1500
+    ]
+   },
+   {
+    "id": "setup",
+    "d": 3400,
+    "reveal": ".tt-on"
+   },
+   {
+    "id": "paywall",
+    "d": 3400,
+    "pop": ".tt-badge"
+   },
+   {
+    "id": "paywall",
+    "d": 1500,
+    "tap": [
+     ".tt-x",
+     700
+    ]
+   },
+   {
+    "id": "offer",
+    "d": 3200,
+    "tap": [
+     ".tt-cta",
+     2500
+    ]
+   },
+   {
+    "id": "later",
+    "d": 3000
+   },
+   {
+    "id": "later",
+    "d": 3000,
+    "end": true
+   }
+  ],
+  "captions": {
+   "vehicle": {
+    "k": "Context",
+    "t": "Your first question, kept",
+    "l": "Car or truck. Now it also picks the plan."
+   },
+   "reason": {
+    "k": "Context",
+    "t": "What’s the drive for?",
+    "l": "Commute, road trips or work. One tap."
+   },
+   "map": {
+    "n": 4,
+    "t": "Their map, before the price",
+    "l": "The offline map starts downloading before the paywall.",
+    "o": "CR +5–15%",
+    "ol": "to trial or purchase"
+   },
+   "setup": {
+    "n": 1,
+    "t": "Show the setup it made",
+    "l": "A commute switches on live traffic, ETAs and lanes.",
+    "o": "CR +10–20%",
+    "ol": "to trial or purchase"
+   },
+   "paywall": {
+    "n": 2,
+    "t": "The plan for their vehicle",
+    "l": "$29.99 a year: $2.50 a month, 64% less than monthly.",
+    "o": "ARPU +10–15%",
+    "ol": "annual and Truck mix"
+   },
+   "offer": {
+    "n": 5,
+    "t": "One shorter plan on close",
+    "l": "Six months for $19.99. No countdown.",
+    "o": "ARPU +5–10%",
+    "ol": "from people who close it"
+   },
+   "later": {
+    "n": 3,
+    "t": "Prompts after the trial starts",
+    "l": "Tracking and notifications wait until after the price.",
+    "o": "CR +10–15%",
+    "ol": "to trial or purchase"
+   }
+  }
+ },
+ "grounding": "Impact ranges are Adapty’s expected effect from teardowns and A/B tests across 30,000+ subscription apps, not measured lift for TomTom GO Expert. They overlap, so they don’t add up.",
+ "sources": [
+  {
+   "group": "Prices",
+   "items": [
+    {
+     "dt": "$29.99 a year · $6.99 a month · $19.99 for 6 months",
+     "dd": "In-App Purchases on your <a href=\"https://apps.apple.com/us/app/tomtom-go-expert-truck-gps/id884963367\" target=\"_blank\" rel=\"noopener\">US App Store listing<\/a> (12-Month, 1-Month and 6-Month Subscription). $2.50 a month and 64% less than 12 × $6.99 are our arithmetic; $3.33 a month likewise."
+    },
+    {
+     "dt": "Truck: $89.99 a year · $19.99 a month",
+     "dd": "Same listing (12-Month and 1-Month Truck Subscription). $7.50 a month and 62% less than 12 × $19.99 are our arithmetic."
+    },
+    {
+     "dt": "Germany: 19,99 € · 5,99 € · 13,99 € · Truck 89,99 € · 19,99 €",
+     "dd": "In-App Purchases on your <a href=\"https://apps.apple.com/de/app/tomtom-go-expert-lkw-navi/id884963367\" target=\"_blank\" rel=\"noopener\">German App Store listing<\/a>. 1,67 € a month, 72 % and 2,33 € are our arithmetic."
+    },
+    {
+     "dt": "Not used",
+     "dd": "Also listed, but we can’t see which ones your paywall shows: a second 12-Month Subscription at $24.99 (29,99 € in Germany), 3-Month at $7.99, 12-Month Family at $39.99, and a second 12-Month Truck SKU."
+    }
+   ]
+  },
+  {
+   "group": "Proof",
+   "items": [
+    {
+     "dt": "★ 4.2 · 2.5K ratings (US) · ★ 4,5 · 26.175 Bewertungen (Germany)",
+     "dd": "4.16 from 2,473 ratings and 4.46 from 26,175 ratings on the two listings above, October 2026."
+    },
+    {
+     "dt": "800k+ drivers",
+     "dd": "Your <a href=\"https://www.tomtom.com/navigation/mobile-apps/go-expert-app/\" target=\"_blank\" rel=\"noopener\">GO Expert page<\/a> on tomtom.com (800k+ drivers · 4.4 stars · 100+ countries)."
+    }
+   ]
+  },
+  {
+   "group": "Features and copy",
+   "items": [
+    {
+     "dt": "What vehicle do you drive? · Choose your vehicle · Continue · Login",
+     "dd": "The onboarding screen you publish on <a href=\"https://www.tomtom.com/en_gb/navigation/promo/go-nav-restore-purchase\" target=\"_blank\" rel=\"noopener\">tomtom.com’s activation pages<\/a>, word for word."
+    },
+    {
+     "dt": "First-run steps",
+     "dd": "Allow Location, Tour, Allow to track your activity, notifications, Download a Map: <a href=\"https://help.tomtom.com/hc/en-au/articles/31031674105362-Get-started-with-the-GO-Expert-app\" target=\"_blank\" rel=\"noopener\">Get started with the GO Expert app<\/a>. The same page says TomTom services (traffic, online search, online routing) need the tracking consent."
+    },
+    {
+     "dt": "Free trial",
+     "dd": "Payment details at the start, charged only at the end, nothing if cancelled: <a href=\"https://help.tomtom.com/hc/en-au/articles/9790294568338-Managing-subscriptions-for-the-GO-Expert-app\" target=\"_blank\" rel=\"noopener\">Managing subscriptions for the GO Expert app<\/a>. The trial length is not public, so no screen names one."
+    },
+    {
+     "dt": "Live traffic, ETAs, lane guidance, offline maps over Wi‑Fi, vehicle routing, fuel and truck stops, CarPlay, no ads",
+     "dd": "Your App Store description and GO Expert page. ‘Arrive on time, every time’ is from that page."
+    },
+    {
+     "dt": "Commute, road trips, work · the map choice",
+     "dd": "Our additions, built from features you already ship. The German copy is our translation, not yours."
+    }
+   ]
+  },
+  {
+   "group": "Design",
+   "items": [
+    {
+     "dt": "Blue gradient, Continue pill, progress bar, tile border",
+     "dd": "Sampled from your published onboarding screen (#00a4fa → #004d83, #f6f7fe, #004f82)."
+    },
+    {
+     "dt": "Car and truck photos",
+     "dd": "Cut from the same screen; the truck photo is partly covered there, so it is cropped tighter."
+    },
+    {
+     "dt": "Map art, logo",
+     "dd": "Country and Europe map images and the tomtom wordmark from tomtom.com. Green #00a65e is the site’s, used for badges and ticks."
+    },
+    {
+     "dt": "Type",
+     "dd": "Your screens use the iOS system font, so the prototype does too (SF Pro on Apple devices, Inter elsewhere)."
+    }
+   ]
+  },
+  {
+   "group": "What we couldn’t see",
+   "items": [
+    {
+     "dt": "Your paywall",
+     "dd": "Not recorded anywhere we could reach: its layout, the trial length and which 12-month price it shows. The side-by-side below compares your first question instead."
+    },
+    {
+     "dt": "The flow in order",
+     "dd": "We worked from your help pages and one published screen, not a recording, so we don’t know whether the paywall comes before or after the first-run prompts."
+    },
+    {
+     "dt": "Your test history",
+     "dd": "If you’ve run any of these already, tell us and we’ll go deeper on the rest."
+    }
+   ]
+  }
+ ]
+}
+</script>
+
+<script>
+/* per-app hooks go here: window.onSync = function(S){…}; window.onEnter = function(id, S){…}; window.onLang = function(lang){…};
+   Globals available: S (S.lang = current language), C, cur, ORDER, scr, go(), back(), jump(), sync(), setLang(), fillP(str, lang),
+   SHOT (screenshot/tour run), HERO (hero-still run). Per-language dynamic text: read S.lang in onSync. */
+/* TomTom GO Expert hooks: the paywall sub-line per vehicle / map / language, the setup map thumbnail,
+   and the map preselected from the reason (road trips → all of Europe). */
+var MAPIMG = {de: 'assets/site/map-germany.jpg', nl: 'assets/site/map-netherlands.jpg', eu: 'assets/site/map-europe.jpg'};
+var SUBL = {
+  en: {veh: {car: 'car', truck: 'truck'}, map: {de: 'Germany', nl: 'the Netherlands', eu: 'Europe'},
+       f: function(v, m){ return 'For your ' + v + ', with the map of ' + m + '.'; }},
+  de: {veh: {car: 'dein Auto', truck: 'deinen Lkw'}, map: {de: 'Deutschland', nl: 'den Niederlanden', eu: 'Europa'},
+       f: function(v, m){ return 'Für ' + v + ', mit der Karte von ' + m + '.'; }}
+};
+window.onSync = function(S){
+  var L = SUBL[S.lang] || SUBL.en;
+  document.querySelectorAll('.tt-pwsub').forEach(function(el){ el.textContent = L.f(L.veh[S.vehicle] || L.veh.car, L.map[S.map] || L.map.de); });
+  document.querySelectorAll('.tt-mth').forEach(function(el){ el.src = MAPIMG[S.map] || MAPIMG.de; });
+};
+window.onEnter = function(id, S){
+  if (id === 'map' && S.mapFor !== S.reason) { S.map = S.reason === 'trips' ? 'eu' : 'de'; S.mapFor = S.reason; sync(); }
+};
+
+</script>
+<script>
+/* ============ engine — generic, do not fork per app ============ */
+var C = JSON.parse(document.getElementById('content').textContent);
+var S = C.state, scr = {}, ORDER = [], hist = [], cur = null, Q = location.search;
+var SHOT = /[?&](shot|phone|tour)\b/.test(Q), HERO = /[?&]hero\b/.test(Q);
+/* a screen with data-aside (e.g. the paywall TODAY for the side-by-side) renders for stills but is not part of the flow */
+document.querySelectorAll('.scr').forEach(function(s){ scr[s.dataset.id] = s; if (!s.hasAttribute('data-aside')) ORDER.push(s.dataset.id); });
+if (/[?&]shot\b/.test(Q)) document.documentElement.classList.add('shot');
+if (/[?&]phone\b/.test(Q)) document.documentElement.classList.add('shot', 'phoneonly');
+if (/[?&]clear\b/.test(Q)) document.documentElement.classList.add('clear');
+var IDEAS = (C.ideas || []).length;
+
+/* ---- languages: markup is the first language; C.i18n[lang][data-t key] the others; {tokens} from C.prices[lang] ---- */
+var LANGS = C.langs || [], BASE = LANGS.length ? LANGS[0].code : 'en', LANG_DONE = BASE, BASE_LABELS = JSON.parse(JSON.stringify(C.labels || {}));
+if (!S.lang) S.lang = BASE;
+function fillP(s, l){ var P = (C.prices || {})[l] || {}; return String(s).replace(/\{(\w+)\}/g, function(m, k){ return k in P ? P[k] : m; }); }
+function applyLang(){
+  var l = S.lang || BASE; if (l === LANG_DONE) return;
+  var T = (C.i18n || {})[l] || {};
+  document.querySelectorAll('.phone [data-t]').forEach(function(el){
+    if (el._base == null) el._base = el.innerHTML;
+    el.innerHTML = l === BASE || T[el.dataset.t] == null ? el._base : fillP(T[el.dataset.t], l);
+  });
+  C.labels = JSON.parse(JSON.stringify(BASE_LABELS));
+  var LL = (C.labelsI18n || {})[l] || {}; Object.keys(LL).forEach(function(k){ C.labels[k] = LL[k]; });
+  LANG_DONE = l;
+}
+function setLang(l){
+  if (!LANGS.some(function(x){ return x.code === l; })) return;
+  S.lang = l; sync();
+  document.querySelectorAll('[data-setlang]').forEach(function(b){ b.classList.toggle('on', b.dataset.setlang === l); });
+  if (window.onLang) window.onLang(l);
+}
+
+function lab(key){ var v = S[key]; var L = C.labels[key]; if (Array.isArray(v)) return v.map(function(x){ return L && L[x] || x; }).join(', '); return (L && L[v]) || v; }
+function sync(){
+  applyLang();
+  document.querySelectorAll('[data-bind]').forEach(function(el){
+    var b = el.dataset.bind, m = b.split(':');
+    el.textContent = m[0] === 'label' ? lab(m[1]) : m[0] === 'count' ? (S[m[1]] || []).length : (S[b] == null ? '' : S[b]);
+  });
+  document.querySelectorAll('[data-pick]').forEach(function(el){ var p = el.dataset.pick.split(':'); el.classList.toggle('on', S[p[0]] === p[1]); });
+  document.querySelectorAll('[data-toggle]').forEach(function(el){ var p = el.dataset.toggle.split(':'); el.classList.toggle('on', (S[p[0]] || []).indexOf(p[1]) > -1); });
+  document.querySelectorAll('[data-requires]').forEach(function(el){ el.disabled = !(S[el.dataset.requires] || []).length; });
+  document.querySelectorAll('[data-show]').forEach(function(el){ var p = el.dataset.show.split(':'); el.style.display = String(S[p[0]]) === p[1] ? '' : 'none'; });
+  if (window.onSync) window.onSync(S);
+}
+function show(id, dir){
+  var from = scr[cur], to = scr[id]; if (!to || id === cur) return;
+  var sheet = to.classList.contains('sheet');
+  if (from){
+    from.classList.remove('is-active');
+    if (sheet) from.classList.add('under');                                   /* a sheet slides up over the screen that opened it */
+    else if (dir === 'fwd' && !from.classList.contains('sheet')) from.classList.add('is-past');
+  }
+  if (!sheet) Object.keys(scr).forEach(function(k){ var u = scr[k]; if (u !== to && u.classList.contains('under')) { u.classList.remove('under'); if (dir === 'fwd') u.classList.add('is-past'); } });
+  to.classList.remove('is-past', 'under'); to.classList.add('is-active'); cur = id;
+  paint(); if (window.onEnter) window.onEnter(id, S);
+}
+function go(id){ if (cur) hist.push(cur); show(id, 'fwd'); }
+function back(){ if (hist.length) { var p = hist.pop(); scr[cur].classList.remove('is-active'); show(p, 'back'); } }
+function jump(id){
+  Object.keys(scr).forEach(function(k){ scr[k].classList.add('nofx'); scr[k].classList.remove('is-active', 'is-past', 'under'); });
+  var i = ORDER.indexOf(id); hist = ORDER.slice(0, i < 0 ? 0 : i); cur = null;
+  ORDER.slice(0, i).forEach(function(k){ if (!scr[k].classList.contains('sheet')) scr[k].classList.add('is-past'); });
+  if (scr[id] && scr[id].classList.contains('sheet')) {                        /* jumping to a sheet: its opener stays visible under it */
+    for (var j = i - 1; j >= 0; j--) if (!scr[ORDER[j]].classList.contains('sheet')) { scr[ORDER[j]].classList.remove('is-past'); scr[ORDER[j]].classList.add('under'); break; }
+  }
+  show(id, 'jump');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ Object.keys(scr).forEach(function(k){ scr[k].classList.remove('nofx'); }); }); });
+}
+function stepBy(d){ var i = ORDER.indexOf(cur) + d; if (i >= 0 && i < ORDER.length) jump(ORDER[i]); }
+function jumpTo(id){
+  var p = document.getElementById('prototype');
+  if (p && !document.documentElement.classList.contains('appmode')) p.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+  jump(id);
+}
+function paint(){
+  sync();
+  var c = document.getElementById('chips');
+  if (!c.childElementCount) ORDER.forEach(function(id){
+    var p = C.panel[id] || {}, b = document.createElement('button');
+    b.className = 'au-chip'; b.type = 'button'; b.dataset.id = id; b.setAttribute('role', 'tab');
+    b.innerHTML = (p.idea ? '<i>' + p.idea + '</i>' : '') + ((C.chips && C.chips[id]) || id);
+    b.onclick = function(){ jump(id); };
+    c.appendChild(b);
+  });
+  c.querySelectorAll('.au-chip').forEach(function(b){ var on = b.dataset.id === cur; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  var d = C.panel[cur] || {t: cur, why: ''}, n = ORDER.indexOf(cur) + 1;
+  document.getElementById('panel').innerHTML =
+    (d.idea ? '<div class="au-pn-k"><i></i>Idea ' + d.idea + ' of ' + IDEAS + '</div>' : '<div class="au-pn-k au-ctx"><i></i>Context</div>') +
+    '<h3 class="au-pn-t">' + d.t + '</h3><p class="au-pn-h">' + d.why + '</p>' +
+    (d.iv ? '<div class="au-pn-o"><div class="au-lab">Potential outcome · based on Adapty data</div><div class="au-val"><mark>' + d.iv + '</mark></div><div class="au-sub">' + (d.il || '') + '</div></div>' : '') +
+    (d.also ? '<p class="au-pn-a">' + d.also + '</p>' : '') +
+    '<div class="au-pn-nav"><button type="button" onclick="stepBy(-1)"' + (n <= 1 ? ' disabled' : '') + '>‹ Previous</button><span>Screen ' + n + ' of ' + ORDER.length + '</span><button type="button" onclick="stepBy(1)"' + (n === ORDER.length ? ' disabled' : '') + '>Next ›</button></div>';
+  var ab = document.getElementById('abT'); if (ab) ab.textContent = (d.idea ? 'Idea ' + d.idea + ' of ' + IDEAS + ' · ' : '') + (d.t || '');
+}
+document.addEventListener('click', function(e){
+  var j = e.target.closest('[data-jumpto]'); if (j){ e.preventDefault(); jumpTo(j.dataset.jumpto); return; }
+  var L = e.target.closest('[data-setlang]'); if (L){ setLang(L.dataset.setlang); return; }
+  if (e.target.closest('[data-langtoggle]') && LANGS.length > 1){ var k = LANGS.findIndex(function(x){ return x.code === S.lang; }); setLang(LANGS[(k + 1) % LANGS.length].code); return; }
+  var el = e.target.closest('[data-go],[data-back],[data-pick],[data-toggle]'); if (!el) return;
+  if (el.dataset.pick){ var p = el.dataset.pick.split(':'); S[p[0]] = p[1]; sync(); if (el.dataset.advance) setTimeout(function(){ go(el.dataset.advance); }, 170); return; }
+  if (el.dataset.toggle){ var q = el.dataset.toggle.split(':'), a = S[q[0]] = S[q[0]] || [], i = a.indexOf(q[1]); if (i > -1) a.splice(i, 1); else a.push(q[1]); sync(); return; }
+  if ('back' in el.dataset) return back();
+  go(el.dataset.go);
+});
+document.querySelectorAll('[data-input]').forEach(function(inp){
+  inp.value = S[inp.dataset.input] || ''; inp.addEventListener('input', function(){ S[inp.dataset.input] = inp.value.trim() || 'there'; sync(); });
+});
+function $(id){ return document.getElementById(id); }
+
+/* hero stills, shortlist, outcome, sources — from CONTENT */
+$('heroPhones').innerHTML = (C.hero || []).map(function(id, i){
+  var pos = ['l', 'c', 'r'][i] || 'r', t = (C.chips && C.chips[id]) || id;
+  return '<button class="au-hp au-' + pos + '" data-jumpto="' + id + '" aria-label="Open ' + t + '"><img src="assets/hero/' + id + '.png" alt=""></button>';
+}).join('');
+$('ideaList').innerHTML = (C.ideas || []).map(function(r, i){
+  return '<article class="au-idea"><div class="au-num">0' + (i + 1) + '</div><div><h3>' + r.title + '</h3><p>' + r.what + '</p>' +
+    '<button type="button" class="au-lnk" data-jumpto="' + r.screen + '">See it on the screen</button></div>' +
+    '<div class="au-imp"><div class="au-v"><mark>' + r.impact + '</mark></div><div class="au-l">' + r.il + '</div></div></article>';
+}).join('');
+var O = C.outcome || {};
+$('bandNums').innerHTML =
+  (O.cr ? '<div><small>up to</small><b>' + O.cr + '</b><span>CR to purchase</span></div>' : '') +
+  (O.arpu ? '<div><small>up to</small><b>' + O.arpu + '</b><span>ARPU</span></div>' : '');
+$('bandFn').textContent = C.grounding;
+$('fine').textContent = C.grounding + ' Prepared by Adapty.';
+$('srcBody').innerHTML = C.sources.map(function(g){
+  return '<div><h4>' + g.group + '</h4><dl>' + g.items.map(function(it){ return '<dt>' + it.dt + '</dt><dd>' + it.dd + '</dd>'; }).join('') + '</dl></div>';
+}).join('');
+function openSrc(){ var d = $('srcDetails'); d.open = true; d.scrollIntoView({block: 'start'}); }
+
+/* ---- extras: language control, the paywall side by side, QR / phone view, the video ---- */
+if (LANGS.length > 1) {
+  $('langRow').hidden = false;
+  var lb = LANGS.map(function(x){ return '<button type="button" data-setlang="' + x.code + '">' + x.name + '</button>'; }).join('');
+  $('langSw').innerHTML = lb;
+  $('abLang').innerHTML = LANGS.map(function(x){ return '<button type="button" data-setlang="' + x.code + '">' + x.code.toUpperCase() + '</button>'; }).join('');
+}
+var CM = C.compare;
+if (CM && scr[CM.today] && scr[CM.proposed]) {
+  $('compare').hidden = false; $('navCompare').hidden = false;
+  $('cmpBody').innerHTML = '<div class="au-ideas-h"><p class="au-kicker">' + (CM.kicker || 'The paywall, side by side') + '</p><h2 class="au-h2">' + (CM.title || 'Today and proposed.') + (CM.sub ? ' <span>' + CM.sub + '</span>' : '') + '</h2></div>' +
+    '<div class="au-cmp"><figure><img src="assets/hero/' + CM.today + '.png" alt="Your paywall today"><figcaption>Today <span>· ' + (CM.todayCap || 'rebuilt from your recording') + '</span></figcaption></figure>' +
+    '<ol class="au-chg">' + (CM.rows || []).map(function(r){
+      return '<li><h4>' + r.h + (r.idea ? ' <i>Idea ' + r.idea + '</i>' : '') + '</h4><span class="au-was"><em>Today</em>' + r.was + '</span><span class="au-now"><em>Proposed</em>' + r.now + '</span></li>';
+    }).join('') + '</ol>' +
+    '<figure><button type="button" class="au-cmp-go" data-jumpto="' + CM.proposed + '" aria-label="Open the proposed paywall"><img src="assets/hero/' + CM.proposed + '.png" alt="The proposed paywall"></button><figcaption>Proposed <span>· tap to try it</span></figcaption></figure></div>' +
+    (CM.kept ? '<p class="au-kept">' + CM.kept + '</p>' : '');
+}
+if (C.liveUrl) { $('qrCard').hidden = false; $('qrMob').hidden = false; }
+if (/[?&]app\b/.test(Q)) {
+  var H0 = document.documentElement; H0.classList.add('appmode');
+  var openP = function(o){ H0.classList.toggle('au-open', o); $('abWhy').querySelector('em').textContent = o ? 'Close ↓' : 'Why ↑'; };
+  $('abWhy').onclick = function(){ openP(!H0.classList.contains('au-open')); };
+  $('abScrim').onclick = function(){ openP(false); };
+}
+if (C.video) {
+  var dlg = $('vid'), vel = $('vidEl'); vel.src = C.video; if (C.poster) vel.poster = C.poster; $('vidDl').href = C.video;
+  $('heroVideo').hidden = false;
+  $('heroVideo').onclick = function(){ dlg.showModal(); vel.play().catch(function(){}); };
+  $('vidX').onclick = function(){ dlg.close(); };
+  dlg.addEventListener('close', function(){ vel.pause(); });
+  dlg.addEventListener('click', function(e){ if (e.target === dlg) dlg.close(); });
+}
+
+/* ---- ?tour: a deterministic walkthrough from C.tour — tourAt(ms) paints one frame; record-video.sh records it ---- */
+function tourInit(){
+  var T = C.tour, H = document.documentElement, TR = T.transition || 360;
+  H.classList.add('tourmode', 'shot'); document.body.classList.add('nofx');
+  var SEG = T.segments, START = [], STATE = [], UNDER = [], acc = 0, st = JSON.parse(JSON.stringify(C.state));
+  SEG.forEach(function(s, i){
+    START.push(acc); acc += s.d;
+    Object.keys(s.st || {}).forEach(function(k){ st[k] = s.st[k]; }); STATE.push(JSON.parse(JSON.stringify(st)));
+    var u = null; if (scr[s.id].classList.contains('sheet')) for (var j = i - 1; j >= 0; j--) if (!scr[SEG[j].id].classList.contains('sheet')) { u = SEG[j].id; break; }
+    UNDER.push(u);
+  });
+  var TOTAL = acc, capEl = $('tCap'), tap = $('tTap'), pressed = null, popped = [];
+  $('tIntro').innerHTML = '<p class="au-eyebrow"><i></i>' + document.querySelector('.au-top-hero .au-eyebrow').textContent + '</p><h1 class="au-display">' + C.app + '</h1>' +
+    '<p class="au-lede">' + (T.introLede || document.querySelector('.au-top-hero .au-lede').innerHTML) + '</p>';
+  $('tEnd').innerHTML = '<p class="au-eyebrow"><i></i>Growth Audit · ' + C.app + '</p><h2 class="au-te-h">' + (T.endTitle || 'Five ideas, built into your own onboarding.') + '</h2>' +
+    '<div class="au-te-n">' + (O.cr ? '<div><small>up to</small><b>' + O.cr + '</b><span>CR to purchase</span></div>' : '') + (O.arpu ? '<div><small>up to</small><b>' + O.arpu + '</b><span>ARPU</span></div>' : '') + '</div>' +
+    (C.liveUrl ? '<div class="au-te-q"><img src="assets/qr-app.png" alt=""><div><b>Try it on your phone</b><span>' + C.liveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '') + '</span></div></div>' : '') +
+    '<p class="au-te-f">' + C.grounding + '</p>';
+  function ease(x){ return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function easeBack(x){ var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+  function capHTML(c){
+    c = c || {k: '', t: '', l: ''};
+    return '<div class="au-tk' + (c.n ? '' : ' au-ctx') + '"><i></i>' + (c.n ? 'Idea ' + c.n + ' of ' + IDEAS : (c.k || 'Context')) + '</div><h2 class="au-tt">' + c.t + '</h2><p class="au-tl">' + (c.l || '') + '</p>' +
+      (c.o ? '<div class="au-to"><small>Potential outcome · based on Adapty data</small><b><mark>' + c.o + '</mark></b><span>' + (c.ol || '') + '</span></div>' : '');
+  }
+  function place(id, tf, z){ scr[id].style.transform = tf; scr[id].style.zIndex = z; }
+  window.TOUR_MS = TOTAL;
+  window.tourAt = function(ms){
+    ms = Math.max(0, Math.min(TOTAL - 1, ms));
+    var i = 0; while (i < SEG.length - 1 && ms >= START[i + 1]) i++;
+    var s = SEG[i], local = ms - START[i], prev = i > 0 ? SEG[i - 1] : null;
+    Object.keys(STATE[i]).forEach(function(k){ S[k] = STATE[i][k]; }); sync();
+    var moving = prev && prev.id !== s.id && local < TR, p = moving ? ease(local / TR) : 1;
+    Object.keys(scr).forEach(function(k){ scr[k].classList.remove('is-active', 'is-past', 'under'); place(k, 'translateX(100%)', 0); });
+    var B = scr[s.id];
+    if (moving) {
+      if (B.classList.contains('sheet')) { place(prev.id, 'none', 1); B.style.transform = 'translateY(' + (1 - p) * 100 + '%)'; }
+      else {
+        var slide = 'translateX(' + (-28 * p) + '%)'; place(prev.id, slide, 1); B.style.transform = 'translateX(' + (1 - p) * 100 + '%)';
+        if (UNDER[i - 1]) place(UNDER[i - 1], slide, 0);
+      }
+    } else B.style.transform = 'none';
+    B.style.zIndex = 2;
+    if (UNDER[i] && !moving) place(UNDER[i], 'none', 1);
+    /* optional reveal: s.pop scales an element in, s.reveal fades one in a beat later */
+    popped.forEach(function(e){ e.style.transform = ''; e.style.opacity = ''; }); popped = [];
+    var q = Math.max(0, Math.min(1, (local - 250) / 550));
+    if (s.pop) { var pe = B.querySelector(s.pop); if (pe) { pe.style.transform = 'scale(' + (.55 + .45 * easeBack(q)) + ')'; pe.style.opacity = Math.min(1, q * 1.6); popped.push(pe); } }
+    if (s.reveal) { var re = B.querySelector(s.reveal); if (re) { re.style.opacity = Math.max(0, Math.min(1, (local - 520) / 300)); popped.push(re); } }
+    /* caption crossfades at screen changes; waits for the intro, gives way to the end card */
+    var key = s.id, op = 1;
+    if (moving) { if (p < .5) { key = prev.id; op = 1 - p * 2; } else op = p * 2 - 1; }
+    if (capEl.dataset.k !== key) { capEl.innerHTML = capHTML(T.captions[key]); capEl.dataset.k = key; }
+    var io = ms < 1100 ? 1 : Math.max(0, 1 - (ms - 1100) / 300), eo = s.end ? Math.min(1, local / 350) : 0;
+    capEl.style.opacity = op * Math.max(0, Math.min(1, (ms - 1400) / 300)) * (1 - eo);
+    /* the finger: fades in, taps, ripples out. Selectors are scoped to the screen */
+    tap.style.opacity = 0; if (pressed) { pressed.style.opacity = ''; pressed = null; }
+    if (s.tap) {
+      var el = B.querySelector(s.tap[0]), dt = local - s.tap[1];
+      if (el && dt > -260 && dt < 420) {
+        var r = el.getBoundingClientRect();
+        tap.style.left = (r.left + r.width / 2) + 'px'; tap.style.top = (r.top + r.height / 2) + 'px';
+        if (dt < 0) { tap.style.opacity = (dt + 260) / 260 * .9; tap.style.transform = 'scale(1)'; }
+        else { tap.style.opacity = .9 * (1 - dt / 420); tap.style.transform = 'scale(' + (1 + dt / 420 * .9) + ')'; }
+        if (dt >= 0 && dt < 160) { el.style.opacity = .72; pressed = el; }
+      }
+    }
+    $('tIntro').style.opacity = T.intro === false ? 0 : io;
+    $('tEnd').style.opacity = eo;
+    $('tProg').style.width = (ms / TOTAL * 100) + '%';
+    cur = s.id;
+    return i;
+  };
+  var tm = /[?&]t=(\d+)/.exec(Q); tourAt(tm ? +tm[1] : 0);
+}
+
+/* boot: #<screen-id> deep-links a screen (shoot.sh / hero-stills.sh use it); ?lang=xx picks the language */
+(function(){
+  var lm = /[?&]lang=(\w+)/.exec(Q); if (lm) setLang(lm[1]); else setLang(S.lang);
+  var h = location.hash.slice(1);
+  jump(scr[h] ? h : ORDER[0]);
+  if (scr[h] && !SHOT && !document.documentElement.classList.contains('appmode')) setTimeout(function(){ $('prototype').scrollIntoView(); }, 0);
+  if (/[?&]tour\b/.test(Q) && C.tour) tourInit();
+})();
+</script>
+</body>
+</html>
